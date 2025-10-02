@@ -59,7 +59,7 @@ class RegistrationController extends Controller
             } catch (ServiceFormValidationException $exception) {
                 $userRegistrationForm->addError($exception->getAttribute() ?? '', $exception->getErrorMessage() ?? '');
             } catch (Throwable $throwable) {
-                $session->addFlash('error', '$throwable->getMessage()');
+                $session->addFlash('error', $throwable->getMessage());
 
                 $sentryService->captureException($throwable);
             }

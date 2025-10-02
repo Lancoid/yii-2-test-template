@@ -2,32 +2,15 @@
 
 declare(strict_types=1);
 
-$params = require __DIR__ . '/params.php';
-$db = require __DIR__ . '/test_db.php';
+use yii\helpers\ArrayHelper;
 
-return [
-    'id' => 'basic-tests',
-    'basePath' => dirname(__DIR__),
-    'aliases' => [
-        '@bower' => '@vendor/bower-asset',
-        '@npm' => '@vendor/npm-asset',
-    ],
-    'language' => 'en-US',
+$defaultParams = require __DIR__ . '/web.php';
+
+return ArrayHelper::merge($defaultParams, [
     'components' => [
-        'db' => $db,
-        'assetManager' => [
-            'basePath' => __DIR__ . '/../web/assets',
-        ],
-        'urlManager' => [
-            'showScriptName' => true,
-        ],
-        'user' => [
-            'identityClass' => 'app\modules\user\models\User',
-        ],
         'request' => [
-            'cookieValidationKey' => 'test',
+            'enableCookieValidation' => false,
             'enableCsrfValidation' => false,
         ],
     ],
-    'params' => $params,
-];
+]);

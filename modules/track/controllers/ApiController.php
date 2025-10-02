@@ -108,7 +108,7 @@ class ApiController extends Controller
 
         $id = $trackCreateService->handle($trackCreateForm);
 
-        return ['result' => ['is_deleted' => $id]];
+        return ['result' => ['id' => $id]];
     }
 
     /**
@@ -125,7 +125,7 @@ class ApiController extends Controller
             throw new NotFoundHttpException('Not found', HttpCodeDictionary::NOT_FOUND);
         }
 
-        return ['result' => ['data' => $trackDeleteService->handle($id)]];
+        return ['result' => ['is_deleted' => $trackDeleteService->handle($id)]];
     }
 
     /**

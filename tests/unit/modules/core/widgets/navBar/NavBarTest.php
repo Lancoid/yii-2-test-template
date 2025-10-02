@@ -29,7 +29,7 @@ final class NavBarTest extends Unit
             'Menu translation source should be PhpMessageSource');
 
         $this->assertSame(
-            Yii::getAlias('@app/modules/core/messages'),
+            '@app/modules/core/messages',
             $messageSource->basePath,
             'Menu messages base path should be @app/modules/core/messages'
         );

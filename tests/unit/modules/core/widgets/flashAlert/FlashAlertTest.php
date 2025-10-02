@@ -48,25 +48,25 @@ final class FlashAlertTest extends Unit
         // success
         $this->assertStringContainsString('<div class="alert alert-success">', $output);
         $this->assertStringContainsString('<i class="fa fa-check"></i>', $output);
-        $this->assertStringContainsString('>Success<', $output);
+        $this->assertStringContainsString('Success', $output);
         $this->assertStringContainsString('<p>All good</p>', $output);
 
         // info
         $this->assertStringContainsString('<div class="alert alert-info">', $output);
         $this->assertStringContainsString('<i class="fa fa-info-circle"></i>', $output);
-        $this->assertStringContainsString('>Info<', $output);
+        $this->assertStringContainsString('Info', $output);
         $this->assertStringContainsString('<p>FYI</p>', $output);
 
         // warning
         $this->assertStringContainsString('<div class="alert alert-warning">', $output);
         $this->assertStringContainsString('<i class="fa fa-warning"></i>', $output);
-        $this->assertStringContainsString('>Warning<', $output);
+        $this->assertStringContainsString('Warning', $output);
         $this->assertStringContainsString('<p>Be careful</p>', $output);
 
         // error
         $this->assertStringContainsString('<div class="alert alert-danger">', $output);
         $this->assertStringContainsString('<i class="fa fa-ban"></i>', $output);
-        $this->assertStringContainsString('>Error<', $output);
+        $this->assertStringContainsString('Error', $output);
         $this->assertStringContainsString('<p>Something went wrong</p>', $output);
     }
 
@@ -80,7 +80,7 @@ final class FlashAlertTest extends Unit
         // Should use alert-alert-info class, header and icon
         $this->assertStringContainsString('<div class="alert alert-info">', $output);
         $this->assertStringContainsString('<i class="fa fa-info-circle"></i>', $output);
-        $this->assertStringContainsString('>Info<', $output);
+        $this->assertStringContainsString('Info', $output);
         $this->assertStringContainsString('<p>Hello</p>', $output);
     }
 

@@ -16,9 +16,15 @@ class UserRepository implements UserRepositoryInterface
 {
     public function save(UserDto $userDto): int
     {
-        $model = in_array($userDto->getId(), [null, 0], true) ? new User() : $this->findModelId($userDto->getId());
+        $model = in_array($userDto->getId(), [null, 0], true)
+            ? new User()
+            : $this->findModelId($userDto->getId());
 
         $model = $this->fillModel($model, $userDto);
+
+        if ($model->isNewRecord) {
+            unset($model->id);
+        }
 
         try {
             if (!$model->save(false)) {

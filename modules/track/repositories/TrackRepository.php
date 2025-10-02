@@ -27,6 +27,10 @@ class TrackRepository implements TrackRepositoryInterface
 
         $model = $this->fillModel($model, $trackDto);
 
+        if ($model->isNewRecord) {
+            unset($model->id);
+        }
+
         try {
             if (!$model->save(false)) {
                 throw new RuntimeException('Saving error.');
