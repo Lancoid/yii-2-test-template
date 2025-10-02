@@ -1,0 +1,32 @@
+# Phpstorm project files
+.idea
+
+# Netbeans project files
+nbproject
+
+# Zend studio for eclipse project files
+.buildpath
+.project
+.settings
+
+# Windows thumbnail cache
+Thumbs.db
+
+# Composer vendor dir
+/vendor
+
+# Mac DS_Store Files
+.DS_Store
+
+# Autotest dir
+tests/_output/*
+tests/_support/_generated
+
+# Gii folder
+/gii
+
+# Project variables
+.env
+
+# Docker-compose files
+/docker-compose*

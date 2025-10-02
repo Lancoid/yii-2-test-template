@@ -1,0 +1,38 @@
+parameters:
+    tmpDir: ./runtime/linter/.phpstan-cache
+    level: max
+    excludePaths:
+        analyseAndScan:
+            - runtime/
+            - vendor/
+        analyse:
+            - tests/_support/
+    scanDirectories:
+        - tests/_support/
+        - config
+    bootstrapFiles:
+        - vendor/yiisoft/yii2/Yii.php
+    paths:
+        - migrations
+        - modules
+        - tests
+        - web
+    inferPrivatePropertyTypeFromConstructor: true
+    checkFunctionNameCase: true
+    tipsOfTheDay: false
+    parallel:
+        minimumNumberOfJobsPerProcess: 2
+        maximumNumberOfProcesses: 16
+        processTimeout: 600.0
+        jobSize: 10
+    ignoreErrors:
+        - '#Access to an undefined property __Application#'
+        - '#Call to an undefined method __Application#'
+        - '#Call to an undefined static method Yii::#'
+        - '#Method [\S]+ has parameter [\S]+ with no value type specified in iterable type (array|Codeception\\Example)#'
+        - '#Parameter [\S]+ \$config of class yii\\web\\Application constructor expects array#'
+        - '#attributeLabels\(\) should return#'
+        - '#of method PHPUnit\\Framework\\Assert\:\:assertStringContainsString#'
+        - '#Parameter \#1 [\S]+ of method yii\\base\\Model\:\:load\(\) expects array, mixed given#'
+        - '#return type has no value type specified in iterable type array#'
+        - '#\:\:t\(\) should return string but returns mixed#'

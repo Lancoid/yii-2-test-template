@@ -1,0 +1,88 @@
+{
+    "name": "lancoid/yii-2-test-template",
+    "description": "Yii 2 Test Project Template",
+    "keywords": ["yii2", "framework", "project template"],
+    "type": "project",
+    "license": "BSD-3-Clause",
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=8.4",
+        "bower-asset/font-awesome": "^6.3",
+        "bower-asset/jquery-maskedinput": "^1.4",
+        "bower-asset/open-sans-fontface": "^1.4",
+        "juliardi/yii2-captcha": "*",
+        "sentry/sdk": "^4.0",
+        "sentry/sentry": "^4.16",
+        "vlucas/phpdotenv": "^5.6",
+        "yiisoft/yii2": "~2.0.45",
+        "yiisoft/yii2-bootstrap5": "^2.0",
+        "yiisoft/yii2-redis": "^2.0"
+    },
+    "require-dev": {
+        "codeception/codeception": "^5.0.0 || ^4.0",
+        "codeception/lib-innerbrowser": "^4.0 || ^3.0 || ^1.1",
+        "codeception/module-asserts": "^3.0 || ^1.1",
+        "codeception/module-filesystem": "^3.0 || ^2.0 || ^1.1",
+        "codeception/module-yii2": "^1.1",
+        "codeception/verify": "^3.0 || ^2.2",
+        "friendsofphp/php-cs-fixer": "^3.87",
+        "phpstan/phpstan": "2.1.29",
+        "rector/rector": "^2.1",
+        "yiisoft/yii2-debug": "~2.1.0",
+        "yiisoft/yii2-faker": "~2.0.0",
+        "yiisoft/yii2-gii": "~2.2.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true,
+            "php-http/discovery": true
+        },
+        "process-timeout": 1800,
+        "optimize-autoloader": true,
+        "sort-packages": true,
+        "fxp-asset": {
+            "enabled": false
+        }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "yii\\composer\\Installer::postInstall"
+        ],
+        "post-create-project-cmd": [
+            "yii\\composer\\Installer::postCreateProject",
+            "yii\\composer\\Installer::postInstall"
+        ],
+        "cs-check": "./vendor/bin/php-cs-fixer fix --diff --ansi --allow-risky=yes --dry-run",
+        "cs-fix": "./vendor/bin/php-cs-fixer fix --diff --ansi --allow-risky=yes",
+        "phpstan-check": "php -d memory_limit=500M ./vendor/bin/phpstan analyse",
+        "rector-check": "./vendor/bin/rector process --clear-cache --dry-run",
+        "rector-fix": "./vendor/bin/rector process --clear-cache",
+        "pre-commit": [
+            "@cs-fix",
+            "@phpstan-check",
+            "@rector-fix"
+        ]
+    },
+    "extra": {
+        "yii\\composer\\Installer::postCreateProject": {
+            "setPermission": [
+                {
+                    "runtime": "0777",
+                    "web/assets": "0777",
+                    "yii": "0755"
+                }
+            ]
+        },
+        "yii\\composer\\Installer::postInstall": {
+            "generateCookieValidationKey": [
+                "config/web.php"
+            ]
+        }
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        }
+    ]
+}

@@ -1,0 +1,101 @@
+version: '3.8'
+
+networks:
+  traefik:
+    external: true
+  bridge:
+
+volumes:
+  yii-test-db-data:
+    external: true
+
+services:
+  php:
+    container_name: yii-test-php
+    build: &php-build
+      context: .
+      dockerfile: .docker/php/Dockerfile
+      args:
+        USER_NAME: ${USER_NAME}
+        USER_ID: ${USER_ID}
+    user: ${DOCKER_USER_NAME}
+    env_file:
+      - .env
+    volumes:
+      - .:/var/www
+      - ${PRIVATE_SSH_KEY}:/home/${DOCKER_USER_NAME}/.ssh/id_rsa:ro
+      - ${KNOWN_HOSTS}:/home/${DOCKER_USER_NAME}/.ssh/known_hosts:ro
+      - .docker/php/php-fpm.d/dev/php-fpm.conf:/usr/local/etc/php-fpm.conf:ro
+      - .docker/php/php-fpm.d/dev/www.conf:/usr/local/etc/php-fpm.d/www.conf:ro
+      - .docker/php/php.d/dev/php.ini:${PHP_INI_DIR}/php.ini:ro
+      - .docker/php/php.d/dev/docker-php-ext-xdebug.ini:${PHP_INI_DIR}/docker-php-ext-xdebug.ini:ro
+    networks:
+      - bridge
+      - traefik
+    depends_on:
+      db:
+        condition: service_started
+
+  nginx:
+    container_name: yii-test-nginx
+    build:
+      <<: *php-build
+    command: [ "nginx", "-g", "daemon off;" ]
+    depends_on:
+      php:
+        condition: service_started
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.project.rule=Host(`${DOCKER_SERVICE_URL}`)
+      - traefik.http.routers.project.entrypoints=web
+      - traefik.http.services.project.loadBalancer.server.port=80
+      - traefik.docker.network=traefik
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "1"
+    volumes:
+      - .:/var/www
+      - .docker/nginx/common.conf:/etc/nginx/common.conf:ro
+      - .docker/nginx/conf.d/app-dev.conf:/etc/nginx/conf.d/www.conf:ro
+    networks:
+      - bridge
+      - traefik
+
+  db:
+    container_name: yii-test-db
+    build:
+      context: db
+      dockerfile: db/Dockerfile
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: "${DB_DATABASE}"
+      MYSQL_USER: "${DB_USERNAME}"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "1"
+    ports:
+      - "${DB_HOST_PORT}:${DB_PORT}"
+    volumes:
+      - yii-test-db-data:/var/lib/mysql:rw
+    networks:
+      - bridge
+
+  redis:
+    container_name: yii-test-redis
+    image: redis:6-alpine
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "1"
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    networks:
+      - bridge
+
+
