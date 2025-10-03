@@ -34,18 +34,6 @@
         "yiisoft/yii2-faker": "~2.0.0",
         "yiisoft/yii2-gii": "~2.2.0"
     },
-    "config": {
-        "allow-plugins": {
-            "yiisoft/yii2-composer": true,
-            "php-http/discovery": true
-        },
-        "process-timeout": 1800,
-        "optimize-autoloader": true,
-        "sort-packages": true,
-        "fxp-asset": {
-            "enabled": false
-        }
-    },
     "scripts": {
         "post-install-cmd": [
             "yii\\composer\\Installer::postInstall"
@@ -65,6 +53,17 @@
             "@rector-fix"
         ]
     },
+    "autoload":{
+        "psr-4":{
+            "app\\modules\\":"modules/"
+        }
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        }
+    ],
     "extra": {
         "yii\\composer\\Installer::postCreateProject": {
             "setPermission": [
@@ -81,10 +80,16 @@
             ]
         }
     },
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "https://asset-packagist.org"
+    "config": {
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true,
+            "php-http/discovery": true
+        },
+        "process-timeout": 1800,
+        "optimize-autoloader": true,
+        "sort-packages": true,
+        "fxp-asset": {
+            "enabled": false
         }
-    ]
+    }
 }

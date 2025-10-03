@@ -13,7 +13,7 @@ modules:
     - helper\Fixtures
   config:
     Db:
-      dsn: 'pgsql:host=%SQL_DB_HOST%;port=%SQL_INTERNAL_PORT%;dbname=%SQL_DB_AUTO%'
+      dsn: 'pgsql:host=%SQL_HOST%;port=%SQL_INTERNAL_PORT%;dbname=%SQL_DB_AUTO%'
       user: '%SQL_USERNAME%'
       password: '%SQL_PASSWORD%'
     Yii2:
