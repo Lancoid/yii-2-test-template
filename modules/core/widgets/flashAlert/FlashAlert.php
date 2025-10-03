@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace app\modules\core\widgets\flashAlert;
 
+use app\modules\core\CoreModule;
 use Yii;
 use yii\base\Widget;
 
@@ -60,7 +61,7 @@ class FlashAlert extends Widget
                 'messages' => $messages,
                 'alertClass' => $alertClass,
                 'icon' => $icon,
-                'header' => $header,
+                'header' => CoreModule::t('widgets', $header),
             ]);
         }
 

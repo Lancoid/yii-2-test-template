@@ -10,5 +10,5 @@ interface UserDataProviderInterface
 {
     public function getOne(int $userId): ?UserDto;
 
-    public function existUserByEmail(string $email, ?int $notId = null): bool;
+    public function existByEmail(string $email, ?int $notId = null): bool;
 }

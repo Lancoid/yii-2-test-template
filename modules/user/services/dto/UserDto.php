@@ -16,6 +16,7 @@ class UserDto
     private ?string $email = null;
     private ?string $phone = null;
     private ?int $status = null;
+    private ?int $agreementPersonalData = null;
 
     public function setId(?int $id): UserDto
     {
@@ -135,6 +136,18 @@ class UserDto
     public function getStatus(): ?int
     {
         return $this->status;
+    }
+
+    public function setAgreementPersonalData(?int $agreementPersonalData): UserDto
+    {
+        $this->agreementPersonalData = $agreementPersonalData;
+
+        return $this;
+    }
+
+    public function getAgreementPersonalData(): ?int
+    {
+        return $this->agreementPersonalData;
     }
 
     /**

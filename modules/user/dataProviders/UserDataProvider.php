@@ -33,12 +33,12 @@ readonly class UserDataProvider implements UserDataProviderInterface
         return null;
     }
 
-    public function existUserByEmail(string $email, ?int $notId = null): bool
+    public function existByEmail(string $email, ?int $notId = null): bool
     {
         try {
             return $this->userRepository->existByEmail($email, $notId);
         } catch (Throwable $throwable) {
-            $exception = new Exception('UserDataProvider::existUserByEmail ' . $throwable->getMessage(), $throwable->getCode(), $throwable);
+            $exception = new Exception('UserDataProvider::existByEmail ' . $throwable->getMessage(), $throwable->getCode(), $throwable);
 
             $this->sentryService->captureException($exception, [
                 'email' => $email,

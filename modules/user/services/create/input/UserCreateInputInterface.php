@@ -14,6 +14,8 @@ interface UserCreateInputInterface
 
     public function getPhone(): ?string;
 
+    public function getAgreementPersonalData(): ?int;
+
     public function getStatus(): ?int;
 
     public function getRole(): ?string;

@@ -4,9 +4,10 @@
 
 declare(strict_types=1);
 
-use app\modules\core\widgets\navBar\NavBar;
+use app\modules\core\CoreModule;
 use app\modules\user\models\User as AppWebUser;
 use yii\bootstrap5\Nav;
+use yii\bootstrap5\NavBar;
 use yii\web\IdentityInterface;
 use yii\web\User as YiiWebUser;
 
@@ -28,7 +29,7 @@ $appUser = $yiiUser?->identity;
 
 $menuItems = [
     [
-        'label' => NavBar::t('menu', 'Login'),
+        'label' => CoreModule::t('menu', 'Login'),
         'url' => ['/login'],
         'visible' => $yiiUser?->isGuest,
     ],
@@ -42,7 +43,7 @@ $menuItems = [
         'url' => '#',
         'items' => [
             [
-                'label' => NavBar::t('menu', 'Logout'),
+                'label' => CoreModule::t('menu', 'Logout'),
                 'url' => ['/logout'],
                 'linkOptions' => ['data-method' => 'post'],
             ],

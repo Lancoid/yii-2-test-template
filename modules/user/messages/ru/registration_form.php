@@ -8,6 +8,7 @@ return [
     'email' => 'Эл.почта',
     'phone' => 'Телефон',
     'captcha' => 'Проверочный код',
+    'agreementPersonalData' => 'Согласие на обработку персональных данных',
     'registrationTitle' => 'Регистрация',
     'registrationButton' => 'Зарегистрироваться',
 ];

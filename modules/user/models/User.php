@@ -20,6 +20,7 @@ use yii\web\IdentityInterface;
  * @property ?string $email
  * @property ?string $phone
  * @property ?int $status
+ * @property ?int $agreement_personal_data
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -31,15 +32,57 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules(): array
     {
         return [
-            [['access_token'], 'default', 'value' => null],
-            [['created_at', 'updated_at', 'username', 'password_hash', 'auth_key', 'email', 'phone', 'status'], 'required'],
-            [['created_at', 'updated_at'], 'safe'],
-            [['status'], 'integer'],
-            [['username', 'password_hash', 'access_token', 'email'], 'string', 'max' => 255],
-            [['auth_key', 'phone'], 'string', 'max' => 32],
-            [['username'], 'unique'],
+            [
+                [
+                    'created_at',
+                    'updated_at',
+                    'username',
+                    'password_hash',
+                    'auth_key',
+                    'email',
+                    'phone',
+                    'status',
+                    'agreement_personal_data',
+                ],
+                'required',
+            ],
+
+            [
+                [
+                    'created_at',
+                    'updated_at',
+                    'status',
+                    'agreement_personal_data',
+                ],
+                'integer',
+            ],
+            [
+                [
+                    'username',
+                    'password_hash',
+
+                    'email',
+                ],
+                'string',
+                'max' => 255,
+            ],
+
+            [
+                ['auth_key', 'access_token'],
+                'string',
+                'max' => 32,
+            ],
+
+            [
+                ['phone'],
+                'string',
+                'max' => 12,
+            ],
+
             [['email'], 'unique'],
             [['access_token'], 'unique'],
+
+            [['access_token'], 'default', 'value' => null],
         ];
     }
 
@@ -59,6 +102,7 @@ class User extends ActiveRecord implements IdentityInterface
             'email' => Yii::t('app', 'Email'),
             'phone' => Yii::t('app', 'Phone'),
             'status' => Yii::t('app', 'Status'),
+            'agreement_personal_data' => Yii::t('app', 'Agreement personal data'),
         ];
     }
 

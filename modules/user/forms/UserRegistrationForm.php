@@ -6,12 +6,19 @@ declare(strict_types=1);
 
 namespace app\modules\user\forms;
 
+use app\modules\core\validators\PasswordValidator;
+use app\modules\core\validators\WordCountValidator;
+use app\modules\user\dataProviders\UserDataProviderInterface;
 use app\modules\user\dictionaries\UserDictionary;
 use app\modules\user\dictionaries\UserPermissionDictionary;
 use app\modules\user\services\create\input\UserCreateInputInterface;
 use app\modules\user\UserModule;
+use Yii;
+use yii\base\InvalidConfigException;
 use yii\base\Model;
 use yii\captcha\CaptchaValidator;
+use yii\di\NotInstantiableException;
+use yii\validators\InlineValidator;
 
 class UserRegistrationForm extends Model implements UserCreateInputInterface
 {
@@ -24,6 +31,8 @@ class UserRegistrationForm extends Model implements UserCreateInputInterface
     public ?string $phone = null;
 
     public ?string $captcha = null;
+
+    public ?int $agreementPersonalData = null;
 
     public function rules(): array
     {
@@ -45,19 +54,38 @@ class UserRegistrationForm extends Model implements UserCreateInputInterface
             ],
 
             [
-                ['username', 'password', 'email', 'phone', 'captcha'],
+                [
+                    'username',
+                    'password',
+                    'email',
+                    'phone',
+                    'captcha',
+                    'agreementPersonalData',
+                ],
                 'required',
             ],
 
-            [['username'], 'string', 'max' => 64],
-            [['password'], 'string', 'max' => 64],
-            [['email'], 'string', 'max' => 64],
-            [['phone'], 'string'],
-            [['phone'], 'match', 'pattern' => '/\d{11}/', 'message' => '«{attribute}» должен содержать 11 цифр.'],
+            [['username', 'password', 'email'], 'string', 'max' => 64],
+            [['phone'], 'string', 'max' => 11],
+            [['agreementPersonalData'], 'integer'],
 
-            ['captcha', CaptchaValidator::class, 'captchaAction' => 'site/default/captcha'],
+            [['phone'], 'match', 'pattern' => '/\d{11}/', 'message' => UserModule::t('validators', 'phoneFormatError')],
 
             [['email'], 'email', 'enableIDN' => true],
+            [['email'], 'validateEmail'],
+
+            [['username'], WordCountValidator::class, 'max' => 4],
+            [['password'], PasswordValidator::class, 'min' => 10, 'max' => 60],
+            [['captcha'], CaptchaValidator::class, 'captchaAction' => 'site/default/captcha'],
+
+            [
+                ['agreementPersonalData'],
+                'compare',
+                'compareValue' => UserDictionary::AGREEMENT_TO_PROCESSING_PERSONAL_DATA,
+                'operator' => '===',
+                'type' => 'number',
+                'message' => UserModule::t('validators', 'agreementPersonalDataMustSelected'),
+            ],
         ];
     }
 
@@ -72,7 +100,27 @@ class UserRegistrationForm extends Model implements UserCreateInputInterface
             'email' => UserModule::t('registration_form', 'email'),
             'phone' => UserModule::t('registration_form', 'phone'),
             'captcha' => UserModule::t('registration_form', 'captcha'),
+            'agreementPersonalData' => UserModule::t('registration_form', 'agreementPersonalData'),
         ];
+    }
+
+    /**
+     * @throws InvalidConfigException
+     * @throws NotInstantiableException
+     */
+    public function validateEmail(string $attribute, ?array $params, InlineValidator $inlineValidator): void
+    {
+        /** @var UserDataProviderInterface $userDataProvider */
+        $userDataProvider = Yii::$container->get(UserDataProviderInterface::class);
+
+        /** @var string $attributeValue */
+        $attributeValue = $this->{$attribute};
+
+        $isUserExist = $userDataProvider->existByEmail($attributeValue);
+
+        if ($isUserExist) {
+            $inlineValidator->addError($this, $attribute, UserModule::t('validators', 'existUserEmail'), $params);
+        }
     }
 
     public function getUsername(): ?string
@@ -98,6 +146,11 @@ class UserRegistrationForm extends Model implements UserCreateInputInterface
     public function getStatus(): ?int
     {
         return UserDictionary::STATUS_ACTIVE;
+    }
+
+    public function getAgreementPersonalData(): ?int
+    {
+        return $this->agreementPersonalData;
     }
 
     public function getRole(): ?string

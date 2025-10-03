@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Rector\CodeQuality\Rector\Empty_\SimplifyEmptyCheckOnEmptyArrayRector;
 use Rector\CodeQuality\Rector\Identical\FlipTypeControlToUseExclusiveTypeRector;
 use Rector\CodeQuality\Rector\If_\ExplicitBoolCompareRector;
+use Rector\CodeQuality\Rector\Ternary\SwitchNegatedTernaryRector;
 use Rector\CodingStyle\Rector\Catch_\CatchExceptionNameMatchingTypeRector;
 use Rector\CodingStyle\Rector\If_\NullableCompareToNullRector;
 use Rector\CodingStyle\Rector\Stmt\NewlineAfterStatementRector;
@@ -34,6 +35,7 @@ $skippedRules = [
     NewlineAfterStatementRector::class,
     NullableCompareToNullRector::class,
     SimplifyEmptyCheckOnEmptyArrayRector::class,
+    SwitchNegatedTernaryRector::class,
 ];
 
 return RectorConfig::configure()

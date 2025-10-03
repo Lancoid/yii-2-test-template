@@ -28,6 +28,7 @@ class HydrateCreateUserDto
             ->setAccessToken(md5(Yii::$app->security->generateRandomString()))
             ->setEmail($userCreateInput->getEmail())
             ->setPhone($userCreateInput->getPhone())
-            ->setStatus($userCreateInput->getStatus());
+            ->setStatus($userCreateInput->getStatus())
+            ->setAgreementPersonalData($userCreateInput->getAgreementPersonalData());
     }
 }

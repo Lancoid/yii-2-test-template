@@ -56,6 +56,11 @@ $captchaWidgetOptions = [
     'options' => ['class' => 'form-control'],
 ];
 
+$checkboxOptions = [
+    'template' => '{input} {label} {error}',
+    'options' => ['class' => 'form-control'],
+];
+
 UserRegistrationAsset::register($this);
 
 ?>
@@ -76,6 +81,7 @@ UserRegistrationAsset::register($this);
             <?= $form->field($registrationForm, 'email', $emailFieldOptions)->textInput()->label(false) ?>
             <?= $form->field($registrationForm, 'phone', $phoneFieldOptions)->textInput()->label(false) ?>
             <?= $form->field($registrationForm, 'captcha', $captchaFieldOptions)->widget(Captcha::class, $captchaWidgetOptions)->label(false) ?>
+            <?= $form->field($registrationForm, 'agreementPersonalData')->checkbox($checkboxOptions) ?>
             <?= Html::submitButton(UserModule::t('registration_form', 'registrationButton'),
                 ['class' => 'btn btn-success', 'name' => 'user-registration-button']
             ) ?>

@@ -16,7 +16,7 @@ class UserRepository implements UserRepositoryInterface
 {
     public function save(UserDto $userDto): int
     {
-        $model = in_array($userDto->getId(), [null, 0], true)
+        $model = !$userDto->getId()
             ? new User()
             : $this->findModelId($userDto->getId());
 
@@ -83,6 +83,7 @@ class UserRepository implements UserRepositoryInterface
         $user->email = $userDto->getEmail();
         $user->phone = $userDto->getPhone();
         $user->status = $userDto->getStatus();
+        $user->agreement_personal_data = $userDto->getAgreementPersonalData();
 
         return $user;
     }
@@ -100,7 +101,8 @@ class UserRepository implements UserRepositoryInterface
             ->setAccessToken($user->access_token)
             ->setEmail($user->email)
             ->setPhone($user->phone)
-            ->setStatus($user->status);
+            ->setStatus($user->status)
+            ->setAgreementPersonalData($user->agreement_personal_data);
 
         return $userDto;
     }
