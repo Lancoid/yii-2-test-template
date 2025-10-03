@@ -112,7 +112,7 @@ class ApiControllerUpdateActionCest
                 'number' => 'TR-UPDATED-12345',
                 'status' => 'invalid',
                 'expectedAttribute' => 'status',
-                'expectedMessage' => 'Значение «Статус» недопустимо.',
+                'expectedMessage' => 'Значение «Статус» неверно.',
             ],
         ];
     }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace tests\unit\modules\core\widgets\flashAlert;
+namespace app\tests\unit\modules\core\widgets\flashAlert;
 
 use app\modules\core\widgets\flashAlert\FlashAlert;
 use Codeception\Test\Unit;
