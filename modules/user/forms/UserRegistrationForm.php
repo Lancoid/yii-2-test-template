@@ -108,7 +108,7 @@ class UserRegistrationForm extends Model implements UserCreateInputInterface
      * @throws InvalidConfigException
      * @throws NotInstantiableException
      */
-    public function validateEmail(string $attribute, ?array $params, InlineValidator $inlineValidator): void
+    public function validateEmail(string $attribute, array $params, InlineValidator $inlineValidator): void
     {
         /** @var UserDataProviderInterface $userDataProvider */
         $userDataProvider = Yii::$container->get(UserDataProviderInterface::class);

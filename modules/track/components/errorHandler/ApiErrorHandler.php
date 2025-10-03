@@ -9,17 +9,17 @@ use yii\base\UserException;
 use yii\db\Exception;
 use yii\web\ErrorHandler;
 use yii\web\Response;
+use yii\web\View;
 
 class ApiErrorHandler extends ErrorHandler
 {
-    protected function renderException($exception)
+    protected function renderException($exception): void
     {
         if (Yii::$app->has('response')) {
+            /** @var Response $response */
             $response = Yii::$app->getResponse();
-            // reset parameters of response to avoid interference with partially created response data
-            // in case the error occurred while sending the response.
             $response->isSent = false;
-            $response->stream = null;
+            $response->stream = [];
             $response->data = null;
             $response->content = null;
         } else {
@@ -31,7 +31,9 @@ class ApiErrorHandler extends ErrorHandler
         $useErrorView = Response::FORMAT_HTML === $response->format && (!YII_DEBUG || $exception instanceof UserException);
 
         if ($useErrorView && null !== $this->errorAction) {
-            Yii::$app->view->clear();
+            /** @var View $view */
+            $view = Yii::$app->view;
+            $view->clear();
             $result = Yii::$app->runAction($this->errorAction);
             if ($result instanceof Response) {
                 $response = $result;

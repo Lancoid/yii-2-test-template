@@ -135,7 +135,7 @@ class TrackRepository implements TrackRepositoryInterface
 
         $trackDataProviderListViewDto = new TrackDataProviderListViewDto();
 
-        $trackDataProviderListViewDto->setTotalCount($trackQuery->count('DISTINCT id'));
+        $trackDataProviderListViewDto->setTotalCount((int)$trackQuery->count('DISTINCT id'));
 
         if ($trackSearchInput->getPage() > 1 && $trackDataProviderListViewDto->getTotalCount() > self::LIST_VIEW_LIMIT) {
             $trackQuery->offset(self::LIST_VIEW_LIMIT * ($trackSearchInput->getPage() - 1));

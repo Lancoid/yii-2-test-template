@@ -11,8 +11,14 @@ use yii\helpers\Html;
 
 class GridView extends YiiGridView
 {
+    /**
+     * @var string the data column class name
+     */
     public $dataColumnClass = DataColumn::class;
 
+    /**
+     * @var array<array|string, mixed> the HTML attributes for the table tag
+     */
     public $tableOptions = ['class' => 'table dataTable'];
 
     /**
@@ -58,6 +64,10 @@ class GridView extends YiiGridView
 
     public function renderPager(): string
     {
-        return Html::tag('div', parent::renderPager(), ['class' => 'dataTables_paginate paging_simple_numbers']);
+        return Html::tag(
+            'div',
+            parent::renderPager(),
+            ['class' => 'dataTables_paginate paging_simple_numbers']
+        );
     }
 }

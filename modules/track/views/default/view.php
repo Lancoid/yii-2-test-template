@@ -40,11 +40,11 @@ $template = '<tr><th class="col-md-4">{label}</th><td class="col-md-8">{value}</
                 ],
                 [
                     'label' => TrackModule::t('crud_form', 'created_at'),
-                    'value' => DateTimeImmutable::createFromTimestamp($trackDto->getCreatedAt())->format('Y-m-d H:i:s'),
+                    'value' => DateTimeImmutable::createFromTimestamp($trackDto->getCreatedAt() ?? 0)->format('Y-m-d H:i:s'),
                 ],
                 [
                     'label' => TrackModule::t('crud_form', 'updated_at'),
-                    'value' => DateTimeImmutable::createFromTimestamp($trackDto->getUpdatedAt())->format('Y-m-d H:i:s'),
+                    'value' => DateTimeImmutable::createFromTimestamp($trackDto->getUpdatedAt() ?? 0)->format('Y-m-d H:i:s'),
                 ],
             ],
         ]) ?>

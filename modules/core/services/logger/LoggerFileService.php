@@ -15,17 +15,17 @@ class LoggerFileService implements LoggerFileServiceInterface
         $this->logger = $logger;
     }
 
-    public function error(mixed $data, string $category): void
+    public function error(array|string $data, string $category): void
     {
         $this->logger->log($data, Logger::LEVEL_ERROR, $category);
     }
 
-    public function warning(mixed $data, string $category): void
+    public function warning(array|string $data, string $category): void
     {
         $this->logger->log($data, Logger::LEVEL_WARNING, $category);
     }
 
-    public function info(mixed $data, string $category): void
+    public function info(array|string $data, string $category): void
     {
         $this->logger->log($data, Logger::LEVEL_INFO, $category);
     }

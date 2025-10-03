@@ -6,11 +6,11 @@ namespace app\modules\core\services\logger;
 
 interface LoggerFileServiceInterface
 {
-    public function error(mixed $data, string $category): void;
+    public function error(array|string $data, string $category): void;
 
-    public function warning(mixed $data, string $category): void;
+    public function warning(array|string $data, string $category): void;
 
-    public function info(mixed $data, string $category): void;
+    public function info(array|string $data, string $category): void;
 
     /**
      * @description Flushes log messages from memory to targets.

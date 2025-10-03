@@ -27,7 +27,7 @@ class WordCountValidator extends StringValidator
         /** @var string $attributeValue */
         $attributeValue = $model->{$attribute};
 
-        $wordCount = count(preg_split('/\s+/', $attributeValue));
+        $wordCount = count(preg_split('/\s+/', $attributeValue) ?: []);
 
         if (!empty($this->min) && $wordCount > $this->min) {
             $this->addError($model, $attribute, $this->tooShort);

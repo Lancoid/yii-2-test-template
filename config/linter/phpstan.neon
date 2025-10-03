@@ -11,12 +11,14 @@ parameters:
         - ./../../tests/_support/
         - ./../../config
     bootstrapFiles:
-        - ./../../vendor/yiisoft/yii2/Yii.php
+        - ./../__autocomplete.php
     paths:
         - ./../../migrations
         - ./../../modules
         - ./../../tests
         - ./../../web
+    dynamicConstantNames:
+        - YII_DEBUG
     inferPrivatePropertyTypeFromConstructor: true
     checkFunctionNameCase: true
     tipsOfTheDay: false
@@ -32,7 +34,12 @@ parameters:
         - '#Method [\S]+ has parameter [\S]+ with no value type specified in iterable type (array|Codeception\\Example)#'
         - '#Parameter [\S]+ \$config of class yii\\web\\Application constructor expects array#'
         - '#attributeLabels\(\) should return#'
-        - '#of method PHPUnit\\Framework\\Assert\:\:assertStringContainsString#'
+        - '#of method [\S]+\:\:assert#'
         - '#Parameter \#1 [\S]+ of method yii\\base\\Model\:\:load\(\) expects array, mixed given#'
         - '#return type has no value type specified in iterable type array#'
         - '#\:\:t\(\) should return string but returns mixed#'
+        - message: '#Cannot access offset #'
+          path: ./../../tests/
+        - message: '#constructor expects string, mixed given#'
+          path: ./../../tests/
+

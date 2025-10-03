@@ -13,4 +13,5 @@ return [
     'createButton' => 'Создать',
     'updateTitle' => 'Редактирование трека',
     'updateButton' => 'Сохранить',
+    'ID not found' => 'Идентификатор не найден',
 ];

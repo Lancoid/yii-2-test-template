@@ -67,10 +67,10 @@ class ApiController extends Controller
         $response->format = Response::FORMAT_JSON;
 
         $response->on(Response::EVENT_BEFORE_SEND, function () use ($request, $response): void {
-            /** @var LoggerFileServiceInterface $logger */
-            $logger = Yii::$container->get(LoggerFileServiceInterface::class);
+            /** @var LoggerFileServiceInterface $loggerFileService */
+            $loggerFileService = Yii::$container->get(LoggerFileServiceInterface::class);
 
-            $logger->info([
+            $loggerFileService->info([
                 'request' => [
                     'data' => $request->post() ?? $request->getBodyParams(),
                     'headers' => $request->getHeaders()->toArray(),
@@ -145,7 +145,7 @@ class ApiController extends Controller
         }
 
         $trackUpdateForm = new TrackUpdateForm($trackDto);
-        $trackUpdateForm->load($request->getBodyParams(), '');
+        $trackUpdateForm->load((array)$request->getBodyParams(), '');
 
         if (!$trackUpdateForm->validate()) {
             foreach ($trackUpdateForm->getErrors() as $attribute => $errors) {

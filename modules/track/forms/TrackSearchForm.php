@@ -41,8 +41,12 @@ class TrackSearchForm extends Model implements TrackSearchInputInterface
             [
                 ['number', 'status'],
                 'filter',
-                'filter' => function ($value): ?string {
-                    $value = trim($value ?? '');
+                'filter' => function ($value): mixed {
+                    if (!is_string($value)) {
+                        return $value;
+                    }
+
+                    $value = trim($value);
 
                     if ('' === $value) {
                         return null;

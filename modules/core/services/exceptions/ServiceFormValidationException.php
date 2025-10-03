@@ -9,8 +9,8 @@ use Throwable;
 
 class ServiceFormValidationException extends RuntimeException
 {
-    private ?string $attribute;
-    private ?string $errorMessage;
+    private string $attribute;
+    private string $errorMessage;
 
     public function __construct(string $attribute, string $errorMessage, int $code = 0, ?Throwable $previous = null)
     {

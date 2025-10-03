@@ -30,7 +30,7 @@ use yii\widgets\Pjax;
                     'attribute' => 'number',
                     'format' => 'raw',
                     'value' => static function (TrackDto $trackDto) {
-                        return Html::a($trackDto->getNumber(), ['update', 'id' => $trackDto->getId()], ['data-pjax' => 0]);
+                        return Html::a($trackDto->getNumber() ?? '', ['update', 'id' => $trackDto->getId()], ['data-pjax' => 0]);
                     },
                 ],
                 [

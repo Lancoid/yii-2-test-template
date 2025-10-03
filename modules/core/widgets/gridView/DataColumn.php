@@ -8,7 +8,7 @@ use yii\helpers\Html;
 
 class DataColumn extends \yii\grid\DataColumn
 {
-    public function renderHeaderCell()
+    public function renderHeaderCell(): string
     {
         $provider = $this->grid->dataProvider;
 
