@@ -17,11 +17,11 @@ use FunctionalTester;
 /**
  * @internal
  *
- * @coversDefaultClass \app\modules\track\controllers\ApiController::actionCreate
+ * @coversDefaultClass \app\modules\track\controllers\ApiController::actionUpdate
  */
-class ApiControllerCreateActionCest
+class ApiControllerUpdateActionCest
 {
-    private const string METHOD_URL = '/track/api/create';
+    private const string METHOD_URL = '/track/api/update';
 
     public ?string $token = null;
 
@@ -30,8 +30,8 @@ class ApiControllerCreateActionCest
     {
         $functionalTester->loadLocalFixtures();
 
+        /** @var User $user */
         $user = $functionalTester->grabRecord(User::class, ['id' => 1]);
-
         $functionalTester->assertInstanceOf(User::class, $user);
         $functionalTester->assertNotNull($user->access_token);
 
@@ -39,35 +39,41 @@ class ApiControllerCreateActionCest
     }
 
     /**
-     * Ensure successful creation returns expected result structure.
+     * Ensure successful update returns expected result structure and updates DB.
      */
-    public function testActionCreateSuccess(FunctionalTester $functionalTester): void
+    public function testActionUpdateSuccess(FunctionalTester $functionalTester): void
     {
+        $id = 1;
+
+        $functionalTester->seeRecord(Track::class, ['id' => $id]);
+
         $data = [
-            'number' => 'TR-12345',
-            'status' => TrackDictionary::STATUS_IN_PROGRESS,
+            'number' => 'TR-UPDATED-12345',
+            'status' => TrackDictionary::STATUS_COMPLETED,
         ];
 
         $functionalTester->haveHttpHeader('Authorization', 'Bearer ' . $this->token);
-        $functionalTester->sendPost(self::METHOD_URL, $data);
+        $functionalTester->sendPut(self::METHOD_URL . '?id=' . $id, $data);
         $functionalTester->seeResponseCodeIs(HttpCodeDictionary::OK);
 
         $response = json_decode($functionalTester->grabResponse(), true);
-
         $functionalTester->assertArrayHasKey('result', $response);
         $functionalTester->assertArrayHasKey('id', $response['result']);
-        $functionalTester->assertEquals(2, $response['result']['id']);
+        $functionalTester->assertEquals($id, $response['result']['id']);
 
+        // Check that the DB record has been updated
         $functionalTester->seeRecord(Track::class, [
-            'id' => 2,
-            'number' => 'TR-12345',
-            'status' => TrackDictionary::STATUS_IN_PROGRESS,
+            'id' => $id,
+            'number' => 'TR-UPDATED-12345',
+            'status' => TrackDictionary::STATUS_COMPLETED,
         ]);
     }
 
     #[DataProvider('validationDataProvider')]
-    public function testActionCreateValidation(FunctionalTester $functionalTester, Example $example): void
+    public function testActionUpdateValidation(FunctionalTester $functionalTester, Example $example): void
     {
+        $id = 1;
+
         $data = [
             'number' => $example['number'],
             'status' => $example['status'],
@@ -81,9 +87,10 @@ class ApiControllerCreateActionCest
                 $example['expectedMessage'],
                 HttpCodeDictionary::BAD_REQUEST
             ),
-            function () use ($functionalTester, $data): void {
-                $functionalTester->sendPost(self::METHOD_URL, $data);
-            });
+            function () use ($functionalTester, $id, $data): void {
+                $functionalTester->sendPut(self::METHOD_URL . '?id=' . $id, $data);
+            }
+        );
     }
 
     protected function validationDataProvider(): array
@@ -91,22 +98,39 @@ class ApiControllerCreateActionCest
         return [
             [
                 'number' => '',
-                'status' => '',
+                'status' => TrackDictionary::STATUS_IN_PROGRESS,
                 'expectedAttribute' => 'number',
                 'expectedMessage' => 'Необходимо заполнить «Номер».',
             ],
             [
-                'number' => 'TR-12345',
+                'number' => 'TR-UPDATED-12345',
                 'status' => '',
                 'expectedAttribute' => 'status',
                 'expectedMessage' => 'Необходимо заполнить «Статус».',
             ],
             [
-                'number' => '',
-                'status' => TrackDictionary::STATUS_IN_PROGRESS,
-                'expectedAttribute' => 'number',
-                'expectedMessage' => 'Необходимо заполнить «Номер».',
+                'number' => 'TR-UPDATED-12345',
+                'status' => 'invalid',
+                'expectedAttribute' => 'status',
+                'expectedMessage' => 'Значение «Статус» недопустимо.',
             ],
         ];
+    }
+
+    /**
+     * Ensure not found is returned for non-existing record.
+     */
+    public function testActionUpdateNotFound(FunctionalTester $functionalTester): void
+    {
+        $id = 999;
+
+        $data = [
+            'number' => 'TR-NONEXIST-0001',
+            'status' => TrackDictionary::STATUS_COMPLETED,
+        ];
+
+        $functionalTester->haveHttpHeader('Authorization', 'Bearer ' . $this->token);
+        $functionalTester->sendPut(self::METHOD_URL . '?id=' . $id, $data);
+        $functionalTester->seeResponseCodeIs(HttpCodeDictionary::NOT_FOUND);
     }
 }

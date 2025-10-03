@@ -13,7 +13,7 @@ use FunctionalTester;
 /**
  * @internal
  *
- * @coversDefaultClass \app\modules\track\controllers\ApiController
+ * @coversDefaultClass \app\modules\track\controllers\ApiController::actionDelete
  */
 class ApiControllerDeleteActionCest
 {

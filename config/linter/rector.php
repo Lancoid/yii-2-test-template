@@ -36,7 +36,7 @@ $skippedRules = [
     SimplifyEmptyCheckOnEmptyArrayRector::class,
 ];
 
-$rector = RectorConfig::configure()
+return RectorConfig::configure()
     ->withPreparedSets(
         deadCode: true,
         codeQuality: true,
@@ -54,5 +54,3 @@ $rector = RectorConfig::configure()
     ->withPhpVersion(PhpVersion::PHP_84)
     ->withImportNames(removeUnusedImports: true)
     ->withSkip($skippedRules);
-
-return $rector;
