@@ -54,11 +54,11 @@
             "yii\\composer\\Installer::postCreateProject",
             "yii\\composer\\Installer::postInstall"
         ],
-        "cs-check": "./vendor/bin/php-cs-fixer fix --diff --ansi --allow-risky=yes --dry-run",
-        "cs-fix": "./vendor/bin/php-cs-fixer fix --diff --ansi --allow-risky=yes",
-        "phpstan-check": "php -d memory_limit=500M ./vendor/bin/phpstan analyse",
-        "rector-check": "./vendor/bin/rector process --clear-cache --dry-run",
-        "rector-fix": "./vendor/bin/rector process --clear-cache",
+        "cs-check": "./vendor/bin/php-cs-fixer --config=config/linter/.php-cs-fixer.dist.php fix --diff --ansi --allow-risky=yes --dry-run",
+        "cs-fix": "./vendor/bin/php-cs-fixer --config=config/linter/.php-cs-fixer.dist.php fix --diff --ansi --allow-risky=yes",
+        "phpstan-check": "php -d memory_limit=500M ./vendor/bin/phpstan analyse -c config/linter/phpstan.neon",
+        "rector-check": "./vendor/bin/rector process --config=config/linter/rector.php --clear-cache --dry-run",
+        "rector-fix": "./vendor/bin/rector process --config=config/linter/rector.php --clear-cache",
         "pre-commit": [
             "@cs-fix",
             "@phpstan-check",

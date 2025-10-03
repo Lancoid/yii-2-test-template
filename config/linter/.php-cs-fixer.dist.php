@@ -1,12 +1,12 @@
 <?php
 
 $finder = PhpCsFixer\Finder::create()
-    ->in(__DIR__)
+    ->in(__DIR__ . '/../../')
     ->notPath(['tests/_support/_generated', 'tests/_output', 'tests/bin'])
     ->exclude(['vendor', 'web', 'runtime']);
 
 return (new PhpCsFixer\Config())
-    ->setCacheFile(__DIR__ . '/runtime/linter/.php_cs.cache')
+    ->setCacheFile(__DIR__ . '/../../runtime/linter/.php_cs.cache')
     ->setRules([
         /* Rule sets https://cs.symfony.com/doc/ruleSets/index.html */
         '@PhpCsFixer' => true,

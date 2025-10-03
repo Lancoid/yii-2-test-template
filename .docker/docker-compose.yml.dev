@@ -69,19 +69,18 @@ services:
       context: db
       dockerfile: db/Dockerfile
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_DATABASE: "${DB_DATABASE}"
-      MYSQL_USER: "${DB_USERNAME}"
-      MYSQL_PASSWORD: "${DB_PASSWORD}"
+      POSTGRES_DB: ${SQL_DB_MAIN}
+      POSTGRES_USER: ${SQL_USERNAME}
+      POSTGRES_PASSWORD: ${SQL_PASSWORD}
     logging:
       driver: json-file
       options:
         max-size: "100m"
         max-file: "1"
     ports:
-      - "${DB_HOST_PORT}:${DB_PORT}"
+      - "${SQL_EXTERNAL_PORT}:${SQL_INTERNAL_PORT}"
     volumes:
-      - yii-test-db-data:/var/lib/mysql:rw
+      - yii-test-db-data:/var/lib/postgresql/data:rw
     networks:
       - bridge
 

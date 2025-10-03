@@ -13,9 +13,9 @@ modules:
     - helper\Fixtures
   config:
     Db:
-      dsn: 'pgsql:host=%DB_HOST%;port=%DB_PORT%;dbname=%DB_AUTOTEST_DATABASE%'
-      user: '%DB_USERNAME%'
-      password: '%DB_PASSWORD%'
+      dsn: 'pgsql:host=%SQL_DB_HOST%;port=%SQL_INTERNAL_PORT%;dbname=%SQL_DB_AUTO%'
+      user: '%SQL_USERNAME%'
+      password: '%SQL_PASSWORD%'
     Yii2:
       part: [ orm, email, fixtures ]
       configFile: 'config/test_functional.php'

@@ -3,12 +3,13 @@
 declare(strict_types=1);
 
 use yii\db\Connection;
+use yii\db\pgsql\Schema;
 
-$host = getenv('DB_HOST');
-$port = getenv('DB_PORT');
-$db = YII_ENV_TEST ? getenv('DB_AUTOTEST_DATABASE') : getenv('DB_DATABASE');
-$user = getenv('DB_USERNAME');
-$pass = getenv('DB_PASSWORD');
+$host = getenv('SQL_HOST');
+$port = getenv('SQL_INTERNAL_PORT');
+$db = YII_ENV_TEST ? getenv('SQL_DB_AUTO') : getenv('SQL_DB_MAIN');
+$user = getenv('SQL_USERNAME');
+$pass = getenv('SQL_PASSWORD');
 
 return [
     'class' => Connection::class,
@@ -23,8 +24,8 @@ return [
     'enableProfiling' => false,
     'schemaMap' => [
         'pgsql' => [
-            'class' => 'yii\db\pgsql\Schema',
-            'defaultSchema' => 'public', // or your desired schema
+            'class' => Schema::class,
+            'defaultSchema' => 'public',
         ],
     ],
 ];

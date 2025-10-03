@@ -1,22 +1,22 @@
 parameters:
-    tmpDir: ./runtime/linter/.phpstan-cache
+    tmpDir: ./../../runtime/linter/.phpstan-cache
     level: max
     excludePaths:
         analyseAndScan:
-            - runtime/
-            - vendor/
+            - ./../../runtime/
+            - ./../../vendor/
         analyse:
-            - tests/_support/
+            - ./../../tests/_support/
     scanDirectories:
-        - tests/_support/
-        - config
+        - ./../../tests/_support/
+        - ./../../config
     bootstrapFiles:
-        - vendor/yiisoft/yii2/Yii.php
+        - ./../../vendor/yiisoft/yii2/Yii.php
     paths:
-        - migrations
-        - modules
-        - tests
-        - web
+        - ./../../migrations
+        - ./../../modules
+        - ./../../tests
+        - ./../../web
     inferPrivatePropertyTypeFromConstructor: true
     checkFunctionNameCase: true
     tipsOfTheDay: false

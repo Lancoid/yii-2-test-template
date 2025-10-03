@@ -1,6 +1,6 @@
 # Yii Test App
 
-A modular Yii 2 application template with Core, Site, and User modules. It uses MySQL, Redis cache, optional Sentry error reporting, and follows modern PHP 8.4 practices.  
+A modular Yii 2 application template with Core, Site, and User modules. It uses PostgreSQL, Redis cache, optional Sentry error reporting, and follows modern PHP 8.4 practices.  
 Development and tooling are Docker-first, with Composer for dependencies and Codeception for testing.
 
 ## Overview
@@ -8,7 +8,7 @@ Development and tooling are Docker-first, with Composer for dependencies and Cod
 - Language: PHP >= 8.4
 - Package manager: Composer 2
 - Caching: Redis (yii2-redis)
-- Database: MySQL (via PDO)
+- Database: PostgreSQL (via PDO)
 - Error tracking: Sentry (optional)
 - Testing: Codeception (unit/functional), Yii2 module
 - Static analysis/formatting: PHPStan, Rector, PHP-CS-Fixer
@@ -18,7 +18,7 @@ Development and tooling are Docker-first, with Composer for dependencies and Cod
 - Linux/macOS environment is recommended (the original docs target Linux; Windows is not officially supported in the current setup).
 - PHP 8.4+ and Composer 2 if running without Docker.
 - Docker and Docker Compose plugin if using containers.
-- MySQL server and Redis server accessible with configured credentials.
+- PostgreSQL server and Redis server accessible with configured credentials.
 - For Docker-based routing with hostnames, Traefik reverse proxy is referenced by the setup below.
 
 Notes about Docker in this repo:
@@ -37,7 +37,7 @@ Steps:
 ```bash
   cp .env.example .env
 ```
-    At minimum set DB_* , REDIS_* , APP_RELEASE, YII_ENV, YII_DEBUG, and APP_HOST.
+    At minimum set SQL_* , REDIS_* , APP_RELEASE, YII_ENV, YII_DEBUG, and APP_HOST.
 
 2. Ensure the external networks exist (if you use them):
 ```bash
@@ -99,8 +99,8 @@ If you use a local hostname, add it to /etc/hosts (example):
 Then open http://yii-test.docker (or your APP_HOST).
 
 ### 2) Run without Docker
-1. Ensure PHP 8.4+, Composer 2, MySQL, and Redis are installed and running.
-2. Create .env in the repo root with at least DB_*, REDIS_*, APP_RELEASE, YII_ENV, YII_DEBUG variables.
+1. Ensure PHP 8.4+, Composer 2, PostgreSQL, and Redis are installed and running.
+2. Create .env in the repo root with at least SQL_*, REDIS_*, APP_RELEASE, YII_ENV, YII_DEBUG variables.
 3. Install dependencies: composer install
 4. Apply DB migrations: ./yii migrate/up --interactive=0
 5. Configure your web server to serve the web/ directory as document root. For PHP’s built-in server (dev only):
@@ -125,11 +125,8 @@ Assets:
 ## Testing
 - Test runner: Codeception
 - Config: codeception.yml (uses config/test.php)
+- Build support files for codeception: vendor/bin/codecept build
 - Run all tests: vendor/bin/codecept run
-
-Note:
-- The default test DB DSN is mysql:host=localhost;dbname=yii2basic_test (config/test_db.php). Create that database and grant permissions, or adjust the file to point to your test database.
-
 
 ## Project structure
 - config/ — App configuration (web/console/test, DI container, logging, modules, routing)

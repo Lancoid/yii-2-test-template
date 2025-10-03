@@ -14,16 +14,16 @@ use Rector\Strict\Rector\Empty_\DisallowedEmptyRuleFixerRector;
 use Rector\ValueObject\PhpVersion;
 
 $paths = [
-    __DIR__ . '/config',
-    __DIR__ . '/migrations',
-    __DIR__ . '/modules',
-    __DIR__ . '/tests',
-    __DIR__ . '/web',
+    __DIR__ . '/../../config',
+    __DIR__ . '/../../migrations',
+    __DIR__ . '/../../modules',
+    __DIR__ . '/../../tests',
+    __DIR__ . '/../../web',
 ];
 
 $skippedRules = [
     /* PATHS */
-    __DIR__ . '/tests/_support/_generated',
+    __DIR__ . '/../../tests/_support/_generated',
     /* RULES */
     BooleanInBooleanNotRuleFixerRector::class,
     CatchExceptionNameMatchingTypeRector::class,
