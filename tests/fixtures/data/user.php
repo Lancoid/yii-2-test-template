@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use app\modules\user\dictionaries\UserDictionary;
+
 return [
     [
         'id' => 1,
@@ -13,6 +15,7 @@ return [
         'access_token' => '27ecd76eb0ccd718e8d59c2999c29f2a',
         'email' => 'test_user@mail.test',
         'phone' => '71234567890',
-        'status' => 1,
+        'status' => UserDictionary::STATUS_ACTIVE,
+        'agreement_personal_data' => UserDictionary::AGREEMENT_TO_PROCESSING_PERSONAL_DATA,
     ],
 ];

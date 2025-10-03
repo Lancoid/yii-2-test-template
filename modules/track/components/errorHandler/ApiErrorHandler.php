@@ -19,7 +19,8 @@ class ApiErrorHandler extends ErrorHandler
             /** @var Response $response */
             $response = Yii::$app->getResponse();
             $response->isSent = false;
-            $response->stream = [];
+            // @phpstan-ignore-next-line
+            $response->stream = null;
             $response->data = null;
             $response->content = null;
         } else {

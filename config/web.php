@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use app\modules\core\components\assets\AssetManagerReadOnly;
+use app\modules\core\components\assetManager\AssetManagerReadOnly;
 use yii\helpers\ArrayHelper;
 use yii\web\AssetManager;
 use yii\web\CacheSession;
