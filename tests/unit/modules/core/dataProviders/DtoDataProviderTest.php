@@ -16,9 +16,23 @@ final class DtoDataProviderTest extends Unit
 {
     public function testReturnsEmptyArray(): void
     {
-        $provider = new DtoDataProvider();
+        $allModels = [];
 
-        $this->assertSame([], $provider->getModels());
+        $dtoDataProvider = new DtoDataProvider([
+            'allModels' => $allModels,
+            'pagination' => [
+                'pageSize' => 10,
+                'pageSizeParam' => false,
+            ],
+        ]);
+
+        $dtoDataProvider->setTotalCount(0);
+        $dtoDataProvider->getModels();
+
+        $this->assertNotFalse($dtoDataProvider->getPagination());
+
+        $this->assertSame(0, $dtoDataProvider->getPagination()->totalCount);
+        $this->assertSame($allModels, $dtoDataProvider->getModels());
     }
 
     public function testReturnCorrectResult(): void
@@ -29,7 +43,7 @@ final class DtoDataProviderTest extends Unit
             ['id' => 3],
         ];
 
-        $provider = new DtoDataProvider([
+        $dtoDataProvider = new DtoDataProvider([
             'allModels' => $allModels,
             'pagination' => [
                 'pageSize' => 10,
@@ -37,10 +51,12 @@ final class DtoDataProviderTest extends Unit
             ],
         ]);
 
-        $provider->setTotalCount(count($allModels));
-        $provider->getModels();
+        $dtoDataProvider->setTotalCount(count($allModels));
+        $dtoDataProvider->getModels();
 
-        $this->assertSame(3, $provider->getPagination()->totalCount);
-        $this->assertSame($allModels, $provider->getModels());
+        $this->assertNotFalse($dtoDataProvider->getPagination());
+
+        $this->assertSame(count($allModels), $dtoDataProvider->getPagination()->totalCount);
+        $this->assertSame($allModels, $dtoDataProvider->getModels());
     }
 }

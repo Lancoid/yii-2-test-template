@@ -28,6 +28,7 @@ class ApiControllerDeleteActionCest
 
         /** @var User $user */
         $user = $functionalTester->grabRecord(User::class, ['id' => 1]);
+
         $functionalTester->assertInstanceOf(User::class, $user);
         $functionalTester->assertNotNull($user->access_token);
 

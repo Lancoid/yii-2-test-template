@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace app\modules\track\components\errorHandler;
 
+use app\modules\core\dictionaries\HttpCodeDictionary;
 use Yii;
 use yii\base\UserException;
 use yii\db\Exception;
 use yii\web\ErrorHandler;
 use yii\web\Response;
+use yii\web\UnauthorizedHttpException as YiiUnauthorizedHttpException;
 use yii\web\View;
 
 class ApiErrorHandler extends ErrorHandler
@@ -27,7 +29,13 @@ class ApiErrorHandler extends ErrorHandler
             $response = new Response();
         }
 
-        $response->setStatusCode($exception->getCode());
+        $statusCode = $exception->getCode();
+
+        if ($exception instanceof YiiUnauthorizedHttpException) {
+            $statusCode = HttpCodeDictionary::UNAUTHORIZED;
+        }
+
+        $response->setStatusCode($statusCode);
 
         $useErrorView = Response::FORMAT_HTML === $response->format && (!YII_DEBUG || $exception instanceof UserException);
 

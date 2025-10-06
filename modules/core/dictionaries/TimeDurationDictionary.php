@@ -7,6 +7,11 @@ namespace app\modules\core\dictionaries;
 class TimeDurationDictionary
 {
     /**
+     * @description 1 секунда
+     */
+    public const int ONE_SECOND = 1;
+
+    /**
      * @description 5 секунд
      */
     public const int FIVE_SECONDS = 5;

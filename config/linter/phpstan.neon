@@ -42,4 +42,5 @@ parameters:
           path: ./../../tests/
         - message: '#constructor expects string, mixed given#'
           path: ./../../tests/
-
+        - message: '#Cannot call method [\S]+\(\) on [\S]+.#'
+          path: ./../../tests/

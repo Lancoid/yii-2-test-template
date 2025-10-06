@@ -9,7 +9,6 @@ interface CacheServiceInterface
     /**
      * @description Stores a value identified by a key into cache.
      * If the cache already contains such a key, the existing value and
-     *
      * expiration time will be replaced with the new ones, respectively.
      *
      * @param int|string $key a key identifying the value to be cached. This can be a simple string or

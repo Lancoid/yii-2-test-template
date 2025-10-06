@@ -30,6 +30,7 @@ class ApiControllerCreateActionCest
     {
         $functionalTester->loadLocalFixtures();
 
+        /** @var User $user */
         $user = $functionalTester->grabRecord(User::class, ['id' => 1]);
 
         $functionalTester->assertInstanceOf(User::class, $user);

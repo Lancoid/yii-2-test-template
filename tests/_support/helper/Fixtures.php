@@ -8,6 +8,7 @@ use Codeception\Exception\ModuleException;
 use Codeception\Module;
 use Codeception\Module\Db as DbModule;
 use Exception;
+use Throwable;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\test\FixtureTrait;
@@ -35,11 +36,23 @@ class Fixtures extends Module
 
         foreach ($fixtures as $className => &$fixture) {
             $tableName = Yii::createObject($className)?->getTableSchema()?->fullName;
+            $sequenceName = Yii::createObject($className)?->getTableSchema()?->sequenceName;
 
             if ($tableName) {
-                /** @var DbModule $db */
-                $db = $this->getModule('Db');
-                $db->_getDriver()->executeQuery('TRUNCATE TABLE ' . $tableName . ' RESTART IDENTITY;', []);
+                $command = 'TRUNCATE TABLE ' . $tableName;
+
+                if ($sequenceName) {
+                    $command .= ' RESTART IDENTITY';
+                }
+
+                $command .= ' CASCADE;';
+
+                try {
+                    /** @var DbModule $db */
+                    $db = $this->getModule('Db');
+                    $db->_getDriver()->executeQuery($command, []);
+                } catch (Throwable) {
+                }
             }
 
             $compiled = [];
