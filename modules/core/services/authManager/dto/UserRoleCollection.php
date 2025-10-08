@@ -61,13 +61,8 @@ class UserRoleCollection implements UserRoleCollectionInterface
 
     public function exist(string $roleName): bool
     {
-        foreach ($this->dtoList as $data) {
-            if ($data->getName() === $roleName) {
-                return true;
-            }
-        }
+        return array_any($this->dtoList, fn($data) => $data->getName() === $roleName);
 
-        return false;
     }
 
     public function intersect(array $roleNameList): array

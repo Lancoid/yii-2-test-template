@@ -61,13 +61,8 @@ class UserPermissionCollection implements UserPermissionCollectionInterface
 
     public function exist(string $permissionName): bool
     {
-        foreach ($this->dtoList as $dto) {
-            if ($dto->getName() === $permissionName) {
-                return true;
-            }
-        }
+        return array_any($this->dtoList, fn($dto) => $dto->getName() === $permissionName);
 
-        return false;
     }
 
     public function intersect(array $permissionNameList): array
