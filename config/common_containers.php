@@ -14,6 +14,10 @@ use app\modules\core\services\database\DatabaseTransactionService;
 use app\modules\core\services\database\DatabaseTransactionServiceInterface;
 use app\modules\core\services\logger\LoggerFileService;
 use app\modules\core\services\logger\LoggerFileServiceInterface;
+use app\modules\core\services\metrics\MetricsService;
+use app\modules\core\services\metrics\MetricsServiceInterface;
+use app\modules\core\services\metrics\storage\FileMetricsStorage;
+use app\modules\core\services\metrics\storage\MetricsStorageInterface;
 use app\modules\core\services\sentry\SentryService;
 use app\modules\core\services\sentry\SentryServiceInterface;
 use app\modules\track\dataProviders\TrackDataProvider;
@@ -45,6 +49,7 @@ use yii\log\Logger;
 use yii\rbac\DbManager as YiiRbacDbManager;
 use yii\redis\Cache;
 
+/** @var array<string,mixed> $params */
 $params = require __DIR__ . '/params.php';
 
 return [
@@ -95,6 +100,19 @@ return [
         /* LOGGER */
         Logger::class => ['profilingAware' => true],
         LoggerFileServiceInterface::class => LoggerFileService::class,
+
+        /* METRICS */
+        MetricsStorageInterface::class => [
+            ['class' => FileMetricsStorage::class],
+            [getenv('METRICS_STORAGE_PATH')],
+        ],
+        MetricsServiceInterface::class => [
+            ['class' => MetricsService::class],
+            [
+                Instance::of(MetricsStorageInterface::class),
+                'false' !== getenv('METRICS_ENABLED'),
+            ],
+        ],
 
         /* USER */
         UserCreateServiceInterface::class => UserCreateService::class,

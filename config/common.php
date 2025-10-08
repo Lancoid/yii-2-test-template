@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 ini_set('serialize_precision', -1);
 
+use app\modules\core\components\metrics\MetricsComponent;
 use app\modules\user\models\User;
 use yii\caching\CacheInterface;
 use yii\db\Connection;
@@ -11,11 +12,15 @@ use yii\gii\Module as GiiModule;
 use yii\rbac\DbManager;
 use yii\web\User as UserCore;
 
+/** @var array<string,mixed> $params */
 $params = require __DIR__ . '/params.php';
 
 $config = [
     'version' => $params['version'],
-    'bootstrap' => ['log'],
+    'bootstrap' => [
+        'log',
+        'metrics',
+    ],
     'language' => 'ru-RU',
     'id' => 'yii-test-application',
     'name' => 'YiiTest Application',
@@ -43,6 +48,15 @@ $config = [
             'loginUrl' => ['/login'],
         ],
         'log' => require __DIR__ . '/log.php',
+        'metrics' => [
+            'class' => MetricsComponent::class,
+            'enabled' => 'false' !== getenv('METRICS_ENABLED'),
+            'excludeRoutes' => [
+                'debug/*',        // Exclude debug toolbar
+                'gii/*',          // Exclude Gii
+                'core/metrics/*', // Exclude metrics endpoints to avoid recursion
+            ],
+        ],
     ],
     'vendorPath' => dirname(__DIR__) . '/vendor',
     'container' => require __DIR__ . '/common_containers.php',
