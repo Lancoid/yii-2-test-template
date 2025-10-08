@@ -4,20 +4,23 @@ declare(strict_types=1);
 
 namespace app\modules\core\services\authManager\dto;
 
+/**
+ * Data Transfer Object representing a user's assignment to a role or permission.
+ */
 class UserAssignmentDto
 {
     /**
-     * @description User ID
+     * User ID.
      */
     private int $userId;
 
     /**
-     * @description The name of the role or permission
+     * The name of the role or permission.
      */
     private string $accessName;
 
     /**
-     * @description UNIX timestamp representing the assignment creation time
+     * UNIX timestamp representing the assignment creation time.
      */
     private int $createdAt;
 
@@ -41,11 +44,17 @@ class UserAssignmentDto
         return $this->accessName;
     }
 
+    /**
+     * @param int $createdAt UNIX timestamp
+     */
     public function setCreatedAt(int $createdAt): void
     {
         $this->createdAt = $createdAt;
     }
 
+    /**
+     * @return int UNIX timestamp
+     */
     public function getCreatedAt(): int
     {
         return $this->createdAt;

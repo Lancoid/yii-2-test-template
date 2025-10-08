@@ -16,22 +16,22 @@ final class UserAssignmentDtoTest extends Unit
 {
     public function testPropertyUserId(): void
     {
-        $dto = new UserAssignmentDto();
-        $dto->setUserId(42);
-        $this->assertEquals(42, $dto->getUserId());
+        $userAssignmentDto = new UserAssignmentDto();
+        $userAssignmentDto->setUserId(42);
+        $this->assertEquals(42, $userAssignmentDto->getUserId());
     }
 
     public function testPropertyAccessName(): void
     {
-        $dto = new UserAssignmentDto();
-        $dto->setAccessName('admin');
-        $this->assertEquals('admin', $dto->getAccessName());
+        $userAssignmentDto = new UserAssignmentDto();
+        $userAssignmentDto->setAccessName('admin');
+        $this->assertEquals('admin', $userAssignmentDto->getAccessName());
     }
 
     public function testPropertyCreatedAt(): void
     {
-        $dto = new UserAssignmentDto();
-        $dto->setCreatedAt(1696780800);
-        $this->assertEquals(1696780800, $dto->getCreatedAt());
+        $userAssignmentDto = new UserAssignmentDto();
+        $userAssignmentDto->setCreatedAt(1696780800);
+        $this->assertEquals(1696780800, $userAssignmentDto->getCreatedAt());
     }
 }

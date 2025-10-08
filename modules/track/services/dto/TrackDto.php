@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace app\modules\track\services\dto;
 
+/**
+ * Data Transfer Object representing a track entity used across services.
+ */
 class TrackDto
 {
     private ?int $id = null;
@@ -73,6 +76,8 @@ class TrackDto
     }
 
     /**
+     * Get associative array of DTO public/protected properties.
+     *
      * @return array<string, mixed>
      */
     public function getData(): array

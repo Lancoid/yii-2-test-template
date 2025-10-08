@@ -18,86 +18,86 @@ final class UserRoleDtoTest extends Unit
 {
     public function testPropertyName(): void
     {
-        $dto = new UserRoleDto();
-        $dto->setName('role');
-        $this->assertSame('role', $dto->getName());
+        $userRoleDto = new UserRoleDto();
+        $userRoleDto->setName('role');
+        $this->assertSame('role', $userRoleDto->getName());
     }
 
     public function testPropertyDescription(): void
     {
-        $dto = new UserRoleDto();
-        $dto->setDescription('Role description');
-        $this->assertSame('Role description', $dto->getDescription());
+        $userRoleDto = new UserRoleDto();
+        $userRoleDto->setDescription('Role description');
+        $this->assertSame('Role description', $userRoleDto->getDescription());
     }
 
     public function testPropertyRuleName(): void
     {
-        $dto = new UserRoleDto();
-        $dto->setRuleName('someRule');
-        $this->assertSame('someRule', $dto->getRuleName());
+        $userRoleDto = new UserRoleDto();
+        $userRoleDto->setRuleName('someRule');
+        $this->assertSame('someRule', $userRoleDto->getRuleName());
 
-        $dto->setRuleName(null);
-        $this->assertNull($dto->getRuleName());
+        $userRoleDto->setRuleName(null);
+        $this->assertNull($userRoleDto->getRuleName());
     }
 
     public function testPropertyData(): void
     {
-        $dto = new UserRoleDto();
+        $userRoleDto = new UserRoleDto();
         $data = ['k' => 'v'];
-        $dto->setData($data);
-        $this->assertSame($data, $dto->getData());
+        $userRoleDto->setData($data);
+        $this->assertSame($data, $userRoleDto->getData());
     }
 
     public function testPropertyCreatedAt(): void
     {
-        $dto = new UserRoleDto();
-        $dto->setCreatedAt(1111111111);
-        $this->assertSame(1111111111, $dto->getCreatedAt());
+        $userRoleDto = new UserRoleDto();
+        $userRoleDto->setCreatedAt(1111111111);
+        $this->assertSame(1111111111, $userRoleDto->getCreatedAt());
     }
 
     public function testPropertyUpdatedAt(): void
     {
-        $dto = new UserRoleDto();
-        $dto->setUpdatedAt(2222222222);
-        $this->assertSame(2222222222, $dto->getUpdatedAt());
+        $userRoleDto = new UserRoleDto();
+        $userRoleDto->setUpdatedAt(2222222222);
+        $this->assertSame(2222222222, $userRoleDto->getUpdatedAt());
     }
 
     public function testPropertyStatus(): void
     {
-        $dto = new UserRoleDto();
+        $userRoleDto = new UserRoleDto();
 
         // default should be false
-        $this->assertFalse($dto->getStatus());
+        $this->assertFalse($userRoleDto->getStatus());
 
-        $dto->setStatus(true);
-        $this->assertTrue($dto->getStatus());
+        $userRoleDto->setStatus(true);
+        $this->assertTrue($userRoleDto->getStatus());
 
-        $dto->setStatus(false);
-        $this->assertFalse($dto->getStatus());
+        $userRoleDto->setStatus(false);
+        $this->assertFalse($userRoleDto->getStatus());
     }
 
     public function testHasAllPermissionEnabledFlag(): void
     {
-        $dto = new UserRoleDto();
+        $userRoleDto = new UserRoleDto();
 
         // default should be true
-        $this->assertTrue($dto->isHasAllPermissionEnabled());
+        $this->assertTrue($userRoleDto->isHasAllPermissionEnabled());
 
-        $dto->setHasAllPermissionEnabled(false);
-        $this->assertFalse($dto->isHasAllPermissionEnabled());
+        $userRoleDto->setHasAllPermissionEnabled(false);
+        $this->assertFalse($userRoleDto->isHasAllPermissionEnabled());
 
-        $dto->setHasAllPermissionEnabled(true);
-        $this->assertTrue($dto->isHasAllPermissionEnabled());
+        $userRoleDto->setHasAllPermissionEnabled(true);
+        $this->assertTrue($userRoleDto->isHasAllPermissionEnabled());
     }
 
     public function testPermissionsCollection(): void
     {
-        $dto = new UserRoleDto();
+        $userRoleDto = new UserRoleDto();
 
         // default should be null
-        $this->assertNull($dto->getPermissions());
+        $this->assertNull($userRoleDto->getPermissions());
 
-        $collection = new UserPermissionCollection();
+        $userPermissionCollection = new UserPermissionCollection();
 
         $perm1 = new UserPermissionDto();
         $perm1->setName('perm.1');
@@ -117,12 +117,12 @@ final class UserRoleDtoTest extends Unit
         $perm2->setUpdatedAt(4);
         $perm2->setStatus(false);
 
-        $collection->add($perm1);
-        $collection->add($perm2);
+        $userPermissionCollection->add($perm1);
+        $userPermissionCollection->add($perm2);
 
-        $dto->setPermission($collection);
+        $userRoleDto->setPermission($userPermissionCollection);
 
-        $this->assertSame($collection, $dto->getPermissions());
-        $this->assertEquals(2, $dto->getPermissions()->count());
+        $this->assertSame($userPermissionCollection, $userRoleDto->getPermissions());
+        $this->assertEquals(2, $userRoleDto->getPermissions()->count());
     }
 }

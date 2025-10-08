@@ -4,50 +4,53 @@ declare(strict_types=1);
 
 namespace app\modules\core\services\authManager\dto;
 
+/**
+ * Data Transfer Object representing a user role with its metadata and permissions.
+ */
 class UserRoleDto
 {
     /**
-     * @description The name of the role. This must be globally unique.
+     * The name of the role. This must be globally unique.
      */
     private string $name;
 
     /**
-     * @description The role description
+     * The role description.
      */
     private string $description;
 
     /**
-     * @description Name of the rule associated with this role
+     * Name of the rule associated with this role.
      */
     private ?string $ruleName;
 
     /**
-     * @description The additional data associated with this role
+     * Additional data associated with this role.
      */
     private mixed $data;
 
     /**
-     * @description UNIX timestamp representing the role creation time
+     * A UNIX timestamp representing the time of the role create.
      */
     private int $createdAt;
 
     /**
-     * @description UNIX timestamp representing the role updating time
+     * A UNIX timestamp representing the time of the role update.
      */
     private int $updatedAt;
 
     /**
-     * @description Have user this role
+     * Whether the user has this role.
      */
     private bool $status = false;
 
     /**
-     * @description Have user enabled all permissions ot this role
+     * Whether the user has all permissions enabled for this role.
      */
     private bool $hasAllPermissionEnabled = true;
 
     /**
-     * @description Collection of permissions of this role
+     * Collection of permissions of this role.
      */
     private ?UserPermissionCollection $userPermissionCollection = null;
 
@@ -91,41 +94,65 @@ class UserRoleDto
         return $this->data;
     }
 
+    /**
+     * @param int $createdAt UNIX timestamp
+     */
     public function setCreatedAt(int $createdAt): void
     {
         $this->createdAt = $createdAt;
     }
 
+    /**
+     * @return int UNIX timestamp
+     */
     public function getCreatedAt(): int
     {
         return $this->createdAt;
     }
 
+    /**
+     * @param int $updatedAt UNIX timestamp
+     */
     public function setUpdatedAt(int $updatedAt): void
     {
         $this->updatedAt = $updatedAt;
     }
 
+    /**
+     * @return int UNIX timestamp
+     */
     public function getUpdatedAt(): int
     {
         return $this->updatedAt;
     }
 
+    /**
+     * @param bool $status Whether the user has this role
+     */
     public function setStatus(bool $status): void
     {
         $this->status = $status;
     }
 
+    /**
+     * @return bool Whether the user has this role
+     */
     public function getStatus(): bool
     {
         return $this->status;
     }
 
+    /**
+     * @param bool $hasAllPermissionEnabled Whether all permissions are enabled
+     */
     public function setHasAllPermissionEnabled(bool $hasAllPermissionEnabled): void
     {
         $this->hasAllPermissionEnabled = $hasAllPermissionEnabled;
     }
 
+    /**
+     * @return bool Whether all permissions are enabled for this role
+     */
     public function isHasAllPermissionEnabled(): bool
     {
         return $this->hasAllPermissionEnabled;

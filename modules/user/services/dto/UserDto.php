@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace app\modules\user\services\dto;
 
+/**
+ * Data Transfer Object representing a user entity used across services.
+ */
 class UserDto
 {
     private ?int $id = null;
@@ -151,6 +154,8 @@ class UserDto
     }
 
     /**
+     * Get the associative array of DTO public/protected properties.
+     *
      * @return array<string, mixed>
      */
     public function getData(): array

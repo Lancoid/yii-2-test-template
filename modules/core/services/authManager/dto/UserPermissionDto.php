@@ -4,40 +4,43 @@ declare(strict_types=1);
 
 namespace app\modules\core\services\authManager\dto;
 
+/**
+ * Data Transfer Object representing a user permission with its metadata.
+ */
 class UserPermissionDto
 {
     /**
-     * @description The name of the permission. This must be globally unique.
+     * The name of the permission. This must be globally unique.
      */
     private string $name;
 
     /**
-     * @description The permission description
+     * The permission description.
      */
     private string $description;
 
     /**
-     * @description Name of the rule associated with this permission
+     * Name of the rule associated with this permission.
      */
     private ?string $ruleName;
 
     /**
-     * @description The additional data associated with this permission
+     * Additional data associated with this permission.
      */
     private mixed $data;
 
     /**
-     * @description UNIX timestamp representing the permission creation time
+     * UNIX timestamp representing the permission creation time.
      */
     private int $createdAt;
 
     /**
-     * @description UNIX timestamp representing the permission updating time
+     * UNIX timestamp representing the permission updating time.
      */
     private int $updatedAt;
 
     /**
-     * @description Have user this permission
+     * Whether the user has this permission.
      */
     private bool $status = false;
 
@@ -81,31 +84,49 @@ class UserPermissionDto
         return $this->data;
     }
 
+    /**
+     * @param int $createdAt UNIX timestamp
+     */
     public function setCreatedAt(int $createdAt): void
     {
         $this->createdAt = $createdAt;
     }
 
+    /**
+     * @return int UNIX timestamp
+     */
     public function getCreatedAt(): int
     {
         return $this->createdAt;
     }
 
+    /**
+     * @param int $updatedAt UNIX timestamp
+     */
     public function setUpdatedAt(int $updatedAt): void
     {
         $this->updatedAt = $updatedAt;
     }
 
+    /**
+     * @return int UNIX timestamp
+     */
     public function getUpdatedAt(): int
     {
         return $this->updatedAt;
     }
 
+    /**
+     * @param bool $status Whether the user has this permission
+     */
     public function setStatus(bool $status): void
     {
         $this->status = $status;
     }
 
+    /**
+     * @return bool Whether the user has this permission
+     */
     public function getStatus(): bool
     {
         return $this->status;
