@@ -1,0 +1,33 @@
+repos:
+  - repo: local
+    hooks:
+      - id: php-cs-fixer
+        name: PHP-CS-Fixer (fix)
+        language: system
+        entry: ./vendor/bin/php-cs-fixer --config=config/linter/.php-cs-fixer.dist.php fix --allow-risky=yes --ansi
+        types: [php]
+        stages: [commit]
+        pass_filenames: true
+        additional_dependencies: []
+        exclude: |
+          ^vendor/|^runtime/|^web/assets/|^tests/_support/_generated/
+      - id: rector
+        name: Rector (auto-refactor)
+        language: system
+        entry: ./vendor/bin/rector process --config=config/linter/rector.php --clear-cache
+        types: [php]
+        stages: [commit]
+        pass_filenames: true
+        additional_dependencies: []
+        exclude: |
+          ^vendor/|^runtime/|^web/assets/|^tests/_support/_generated/
+      - id: phpstan
+        name: PHPStan (analyse)
+        language: system
+        entry: php -d memory_limit=500M ./vendor/bin/phpstan analyse -c config/linter/phpstan.neon
+        types: [php]
+        stages: [commit]
+        pass_filenames: true
+        additional_dependencies: []
+        exclude: |
+          ^vendor/|^runtime/|^web/assets/|^tests/_support/_generated/

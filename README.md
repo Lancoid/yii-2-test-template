@@ -117,6 +117,25 @@ Composer scripts:
 - rector-fix — Rector apply fixes
 - pre-commit — Runs cs-fix, phpstan-check, rector-fix
 
+### Git pre-commit hooks
+This repository includes a pre-commit configuration to enforce code quality before each commit using PHP-CS-Fixer, Rector, and PHPStan.
+
+Setup:
+- Install pre-commit (one-time):
+  - macOS: brew install pre-commit
+  - Linux (recommended): pipx install pre-commit (or pip install --user pre-commit)
+- Enable the hook in this repository:
+  - pre-commit install
+
+Usage:
+- Hooks run automatically on git commit for staged PHP files.
+- Run against all files manually:
+  - pre-commit run --all-files
+- You can also run tools via Composer scripts:
+  - composer cs-fix
+  - composer phpstan-check
+  - composer rector-fix
+
 Assets:
 - ./assets-publish.sh clears web/assets and runs: ./yii asset config/assets.php /dev/null
 - If you add/remove assets, update config/assets.php accordingly.
