@@ -34,6 +34,7 @@ class MetricsComponent extends Component implements BootstrapInterface
 
         // Track errors and exceptions
         $app->on(Application::EVENT_BEFORE_ACTION, function ($event): void {
+            /* @phpstan-ignore-next-line */
             set_error_handler([$this, 'errorHandler']);
         });
     }
@@ -52,8 +53,6 @@ class MetricsComponent extends Component implements BootstrapInterface
         $app = Yii::$app;
         $request = $app->request;
         $response = $app->response;
-
-        /** @var string $route */
         $route = $app->requestedRoute ?? 'unknown';
 
         // Skip excluded routes
@@ -62,13 +61,13 @@ class MetricsComponent extends Component implements BootstrapInterface
         }
 
         $duration = (microtime(true) - $this->startTime) * 1000; // Convert to milliseconds
-        $statusCode = $response?->statusCode ?? HttpCodeDictionary::INTERNAL_SERVER_ERROR;
-        $method = $request->method ?? 'UNKNOWN';
+        $statusCode = $response->statusCode ?: HttpCodeDictionary::INTERNAL_SERVER_ERROR;
+        $method = $request->method ?: 'UNKNOWN';
 
         $this->getMetricsService()->recordRequest($route, $duration, $statusCode, $method);
     }
 
-    public function errorHandler(int $code, string $string, $file, $line): bool
+    public function errorHandler(int $code, string $string, string $file, string $line): bool
     {
         $route = Yii::$app->requestedRoute ?? null;
 

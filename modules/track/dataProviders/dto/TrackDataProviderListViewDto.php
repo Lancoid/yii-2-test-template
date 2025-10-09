@@ -14,7 +14,7 @@ class TrackDataProviderListViewDto
     private int $totalCount = 0;
 
     /**
-     * @var TrackDto[]
+     * @var array<int, TrackDto>
      */
     private array $data = [];
 

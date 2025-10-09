@@ -13,6 +13,7 @@ use Codeception\Attribute\Before;
 use Codeception\Attribute\DataProvider;
 use Codeception\Example;
 use FunctionalTester;
+use Iterator;
 
 /**
  * @internal
@@ -72,6 +73,15 @@ class ApiControllerUpdateActionCest
     #[DataProvider('validationDataProvider')]
     public function testActionUpdateValidation(FunctionalTester $functionalTester, Example $example): void
     {
+        $functionalTester->assertArrayHasKey('number', $example);
+        $functionalTester->assertIsString($example['number']);
+        $functionalTester->assertArrayHasKey('status', $example);
+        $functionalTester->assertIsString($example['number']);
+        $functionalTester->assertArrayHasKey('expectedAttribute', $example);
+        $functionalTester->assertIsString($example['expectedAttribute']);
+        $functionalTester->assertArrayHasKey('expectedMessage', $example);
+        $functionalTester->assertIsString($example['expectedMessage']);
+
         $id = 1;
 
         $data = [
@@ -93,27 +103,25 @@ class ApiControllerUpdateActionCest
         );
     }
 
-    protected function validationDataProvider(): array
+    protected function validationDataProvider(): Iterator
     {
-        return [
-            [
-                'number' => '',
-                'status' => TrackDictionary::STATUS_IN_PROGRESS,
-                'expectedAttribute' => 'number',
-                'expectedMessage' => 'Необходимо заполнить «Номер».',
-            ],
-            [
-                'number' => 'TR-UPDATED-12345',
-                'status' => '',
-                'expectedAttribute' => 'status',
-                'expectedMessage' => 'Необходимо заполнить «Статус».',
-            ],
-            [
-                'number' => 'TR-UPDATED-12345',
-                'status' => 'invalid',
-                'expectedAttribute' => 'status',
-                'expectedMessage' => 'Значение «Статус» неверно.',
-            ],
+        yield [
+            'number' => '',
+            'status' => TrackDictionary::STATUS_IN_PROGRESS,
+            'expectedAttribute' => 'number',
+            'expectedMessage' => 'Необходимо заполнить «Номер».',
+        ];
+        yield [
+            'number' => 'TR-UPDATED-12345',
+            'status' => '',
+            'expectedAttribute' => 'status',
+            'expectedMessage' => 'Необходимо заполнить «Статус».',
+        ];
+        yield [
+            'number' => 'TR-UPDATED-12345',
+            'status' => 'invalid',
+            'expectedAttribute' => 'status',
+            'expectedMessage' => 'Значение «Статус» неверно.',
         ];
     }
 

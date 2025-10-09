@@ -32,9 +32,9 @@ class MetricsController extends Controller
      * Usage: /core/metrics/summary?minutes=60.
      */
     public function actionSummary(
+        MetricsServiceInterface $metricsService,
+        Response $response,
         int $minutes = 60,
-        ?MetricsServiceInterface $metricsService = null,
-        ?Response $response = null
     ): Response {
         $response->format = Response::FORMAT_JSON;
 

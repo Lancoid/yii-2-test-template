@@ -13,7 +13,7 @@ class FileMetricsStorage implements MetricsStorageInterface
     private string $storagePath;
 
     /**
-     * @var array<string, mixed>
+     * @var array<int|string, mixed>
      */
     private array $buffer = [];
     private int $bufferSize = 100;
@@ -58,9 +58,9 @@ class FileMetricsStorage implements MetricsStorageInterface
 
         $files = glob($this->storagePath . '/metrics-*.json');
 
-        foreach ($files as $file) {
+        foreach ($files ?: [] as $file) {
             $content = file_get_contents($file);
-            $lines = explode("\n", trim($content));
+            $lines = explode("\n", trim($content ?: ''));
 
             foreach ($lines as $line) {
                 if (empty($line)) {
@@ -89,7 +89,7 @@ class FileMetricsStorage implements MetricsStorageInterface
         $deleted = 0;
         $files = glob($this->storagePath . '/metrics-*.json');
 
-        foreach ($files as $file) {
+        foreach ($files ?: [] as $file) {
             // Extract date from filename: metrics-2024-01-15.json
             $filename = basename($file);
             if (preg_match('/metrics-(\d{4}-\d{2}-\d{2})\.json/', $filename, $matches)) {

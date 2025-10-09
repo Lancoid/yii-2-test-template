@@ -146,6 +146,7 @@ class MetricsService implements MetricsServiceInterface
         }
 
         // Calculate response time statistics
+        /** @var array<float> $durations */
         if (!empty($durations)) {
             sort($durations);
             $summary['requests']['response_times'] = [
@@ -174,6 +175,9 @@ class MetricsService implements MetricsServiceInterface
         // Flush is handled by storage destructor
     }
 
+    /**
+     * @param array<float> $sorted
+     */
     private function percentile(array $sorted, int $percentile): float
     {
         $index = ($percentile / 100) * (count($sorted) - 1);

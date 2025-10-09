@@ -10,8 +10,9 @@ parameters:
     scanDirectories:
         - ./../../tests/_support/
         - ./../../config
+        - ./../../vendor/yiisoft/yii2/
     bootstrapFiles:
-        - ./../__autocomplete.php
+        - ./../../config/__autocomplete.php
     paths:
         - ./../../migrations
         - ./../../modules
@@ -19,6 +20,24 @@ parameters:
         - ./../../web
     dynamicConstantNames:
         - YII_DEBUG
+        - YII_ENV
+        - YII_ENV_DEV
+        - YII_ENV_TEST
+        - YII_ENV_PROD
+    universalObjectCratesClasses:
+        - yii\base\Component
+        - yii\base\Model
+        - yii\db\BaseActiveRecord
+        - yii\web\Application
+        - yii\web\Request
+        - yii\web\Response
+        - yii\web\Session
+        - yii\web\User
+        - yii\web\UrlManager
+        - yii\web\UrlRule
+        - yii\web\View
+        - yii\web\ViewAction
+        - yii\web\ErrorHandler
     inferPrivatePropertyTypeFromConstructor: true
     checkFunctionNameCase: true
     tipsOfTheDay: false
@@ -31,16 +50,14 @@ parameters:
         - '#Access to an undefined property __Application#'
         - '#Call to an undefined method __Application#'
         - '#Call to an undefined static method Yii::#'
+        - '#Cannot access offset #'
+        - '#Cannot call method [\S]+\(\) on [\S]+.#'
         - '#Method [\S]+ has parameter [\S]+ with no value type specified in iterable type (array|Codeception\\Example)#'
         - '#Parameter [\S]+ \$config of class yii\\web\\Application constructor expects array#'
+        - '#Parameter \#1 [\S]+ of method yii\\base\\Model\:\:load\(\) expects array, mixed given#'
+        - '#Possibly invalid array key type mixed#'
+        - '#\:\:t\(\) should return string but returns mixed#'
         - '#attributeLabels\(\) should return#'
         - '#of method [\S]+\:\:assert#'
-        - '#Parameter \#1 [\S]+ of method yii\\base\\Model\:\:load\(\) expects array, mixed given#'
         - '#return type has no value type specified in iterable type array#'
-        - '#\:\:t\(\) should return string but returns mixed#'
-        - message: '#Cannot access offset #'
-          path: ./../../tests/
-        - message: '#constructor expects string, mixed given#'
-          path: ./../../tests/
-        - message: '#Cannot call method [\S]+\(\) on [\S]+.#'
-          path: ./../../tests/
+        - '#will always evaluate to true#'

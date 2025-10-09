@@ -38,6 +38,7 @@ class FlashAlert extends Widget
 
     public function run(): string
     {
+        /** @var array<string, array<string>|string> $flashes */
         $flashes = Yii::$app->session->getAllFlashes();
 
         if (!$flashes) {

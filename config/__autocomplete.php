@@ -2,15 +2,17 @@
 
 declare(strict_types=1);
 
-use app\modules\user\models\User;
 use yii\di\Container;
 use yii\rbac\DbManager;
 use yii\web\Application;
+use yii\web\Request;
+use yii\web\Response;
+use yii\web\User;
 
 class Yii
 {
     /**
-     * @var __Application|Application|yii\console\Application
+     * @var __Application|Application the application instance (equivalent to `Yii::$app` in Yii 2)
      */
     public static $app;
 
@@ -20,13 +22,30 @@ class Yii
     public static $container;
 }
 
-/**
- * @property DbManager $authManager
- * @property __WebUser|yii\web\User $user
- */
-class __Application {}
+class __Application
+{
+    /**
+     * @var DbManager the authentication manager
+     */
+    public $authManager;
 
-/**
- * @property User $identity
- */
-class __WebUser {}
+    /**
+     * @var User the user component
+     */
+    public $user;
+
+    /**
+     * @var Request the request component
+     */
+    public $request;
+
+    /**
+     * @var Response the response component
+     */
+    public $response;
+
+    /**
+     * @var string the route of the current request
+     */
+    public $requestedRoute;
+}

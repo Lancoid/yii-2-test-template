@@ -69,6 +69,15 @@ class ApiControllerCreateActionCest
     #[DataProvider('validationDataProvider')]
     public function testActionCreateValidation(FunctionalTester $functionalTester, Example $example): void
     {
+        $functionalTester->assertArrayHasKey('number', $example);
+        $functionalTester->assertIsString($example['number']);
+        $functionalTester->assertArrayHasKey('status', $example);
+        $functionalTester->assertIsString($example['number']);
+        $functionalTester->assertArrayHasKey('expectedAttribute', $example);
+        $functionalTester->assertIsString($example['expectedAttribute']);
+        $functionalTester->assertArrayHasKey('expectedMessage', $example);
+        $functionalTester->assertIsString($example['expectedMessage']);
+
         $data = [
             'number' => $example['number'],
             'status' => $example['status'],

@@ -56,6 +56,32 @@ interface MetricsServiceInterface
      * Get metrics summary (response times, error rates, etc.).
      *
      * @param int $minutes Time period in minutes (default 60)
+     *
+     * @return array{
+     *     period_minutes: int,
+     *     from: non-falsy-string,
+     *     to: non-falsy-string,
+     *     requests: array{
+     *         total: int<0, max>,
+     *         by_status: array<int<1, max>>,
+     *         by_method: array<int<1, max>>,
+     *         by_route: array<int<1, max>>,
+     *         response_times: array{
+     *             min: ?float,
+     *             max: ?float,
+     *             avg: ?float,
+     *             p50: ?float,
+     *             p95: ?float,
+     *             p99: ?float,
+     *         },
+     *     },
+     *     errors: array{
+     *         total: int<0, max>,
+     *         by_type: array<int<0, max>>,
+     *         by_route: array<int<0, max>>,
+     *         error_rate: float,
+     *     },
+     * }
      */
     public function getSummary(int $minutes = 60): array;
 
