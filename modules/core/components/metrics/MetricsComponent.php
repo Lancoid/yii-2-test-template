@@ -61,8 +61,8 @@ class MetricsComponent extends Component implements BootstrapInterface
         }
 
         $duration = (microtime(true) - $this->startTime) * 1000; // Convert to milliseconds
-        $statusCode = $response->statusCode ?: HttpCodeDictionary::INTERNAL_SERVER_ERROR;
-        $method = $request->method ?: 'UNKNOWN';
+        $statusCode = $response->statusCode ?? HttpCodeDictionary::INTERNAL_SERVER_ERROR;
+        $method = $request->method ?? 'UNKNOWN';
 
         $this->getMetricsService()->recordRequest($route, $duration, $statusCode, $method);
     }

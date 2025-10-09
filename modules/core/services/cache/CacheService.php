@@ -26,4 +26,14 @@ readonly class CacheService implements CacheServiceInterface
     {
         return $this->cache->delete($key);
     }
+
+    public function multiSet(array $items, ?int $duration = null): array
+    {
+        return $this->cache->multiSet($items, $duration);
+    }
+
+    public function multiGet(array $keys): array
+    {
+        return $this->cache->multiGet($keys);
+    }
 }

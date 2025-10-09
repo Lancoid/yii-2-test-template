@@ -39,4 +39,30 @@ interface CacheServiceInterface
      * @return bool if no error happens during deletion
      */
     public function delete(int|string $key): bool;
+
+    /**
+     * @description Stores multiple items in cache. Each item contains a value identified by a key.
+     * If the cache already contains such a key, the existing value and expiration time will be replaced with the new ones, respectively.
+     *
+     * @param array $items the items to be cached, as key-value pairs
+     * @param null|int $duration default duration in seconds before the cache will expire.
+     *                           If not set, default [[defaultDuration]] value is used.
+     *
+     * @return array array of failed keys
+     */
+    public function multiSet(array $items, ?int $duration = null): array;
+
+    /**
+     * @description  Retrieves multiple values from cache with the specified keys.
+     * Some caches (such as memcache, apc) allow retrieving multiple cached values at the same time,
+     * which may improve the performance. In case a cache does not support this feature natively,
+     * this method will try to simulate it.
+     *
+     * @param array<string> $keys list of string keys identifying the cached values
+     *
+     * @return array list of cached values corresponding to the specified keys. The array
+     *               is returned in terms of (key, value) pairs.
+     *               If a value is not cached or expired, the corresponding array value will be false.
+     */
+    public function multiGet(array $keys): array;
 }
