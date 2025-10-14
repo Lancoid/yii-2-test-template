@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
+use app\modules\core\assets\error\WebErrorAsset;
 use app\modules\core\assets\layout\LayoutAsset;
-use app\modules\site\assets\error\WebErrorAsset;
 use app\modules\user\assets\registration\UserRegistrationAsset;
 use yii\widgets\PjaxAsset;
 
@@ -16,8 +16,6 @@ return [
 
         /* MODULE core */
         LayoutAsset::class,
-
-        /* MODULE site */
         WebErrorAsset::class,
 
         /* MODULE user */

@@ -29,7 +29,7 @@ class UserLoginForm extends Model implements UserLoginInputInterface
             [['password'], 'string', 'max' => 64],
             [['rememberMe'], 'boolean'],
 
-            ['captcha', CaptchaValidator::class, 'captchaAction' => 'site/default/captcha'],
+            ['captcha', CaptchaValidator::class, 'captchaAction' => 'core/default/captcha'],
 
             [['email'], 'email', 'enableIDN' => true],
         ];

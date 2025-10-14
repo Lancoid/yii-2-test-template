@@ -20,7 +20,7 @@ readonly class UserCreateService implements UserCreateServiceInterface
         private AuthManagerServiceInterface $authManagerService,
         private DatabaseTransactionServiceInterface $databaseTransactionService,
         private HydrateCreateUserDto $hydrateCreateUserDto,
-        private UserRepositoryInterface $userRepository
+        private UserRepositoryInterface $userRepository,
     ) {}
 
     public function handle(UserCreateInputInterface $userCreateInput): int

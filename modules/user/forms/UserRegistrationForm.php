@@ -76,7 +76,7 @@ class UserRegistrationForm extends Model implements UserCreateInputInterface
 
             [['username'], WordCountValidator::class, 'max' => 4],
             [['password'], PasswordValidator::class, 'min' => 10, 'max' => 60],
-            [['captcha'], CaptchaValidator::class, 'captchaAction' => 'site/default/captcha'],
+            [['captcha'], CaptchaValidator::class, 'captchaAction' => 'core/default/captcha'],
 
             [
                 ['agreementPersonalData'],

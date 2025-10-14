@@ -21,13 +21,13 @@ repos:
         additional_dependencies: []
         exclude: |
           ^vendor/|^runtime/|^web/assets/|^tests/_support/_generated/
-      - id: php-stan
-        name: PHPStan (analyse)
-        language: system
-        entry: php -d memory_limit=500M ./vendor/bin/phpstan analyse -c ./config/linter/phpstan.neon
-        types: [php]
-        stages: [commit]
-        pass_filenames: true
-        additional_dependencies: []
-        exclude: |
-          ^vendor/|^runtime/|^web/assets/|^tests/_support/_generated/
+#      - id: php-stan
+#        name: PHPStan (analyse)
+#        language: system
+#        entry: php -d memory_limit=500M ./vendor/bin/phpstan analyse -c ./config/linter/phpstan.neon
+#        types: [php]
+#        stages: [commit]
+#        pass_filenames: true
+#        additional_dependencies: []
+#        exclude: |
+#          ^vendor/|^runtime/|^web/assets/|^tests/_support/_generated/

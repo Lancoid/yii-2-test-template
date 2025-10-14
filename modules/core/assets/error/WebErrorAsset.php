@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace app\modules\site\assets\error;
+namespace app\modules\core\assets\error;
 
 use yii\web\AssetBundle;
 

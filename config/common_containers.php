@@ -6,6 +6,8 @@ declare(strict_types=1);
  * @noinspection StaticClosureCanBeUsedInspection
  */
 
+use app\modules\core\services\audit\AuditLogService;
+use app\modules\core\services\audit\AuditLogServiceInterface;
 use app\modules\core\services\authManager\AuthManagerService;
 use app\modules\core\services\authManager\AuthManagerServiceInterface;
 use app\modules\core\services\cache\CacheService;
@@ -101,6 +103,13 @@ return [
         /* LOGGER */
         Logger::class => ['profilingAware' => true],
         LoggerFileServiceInterface::class => LoggerFileService::class,
+        AuditLogServiceInterface::class => [
+            ['class' => AuditLogService::class],
+            [
+                getenv('AUDIT_ENABLED'),
+                Instance::of(LoggerFileServiceInterface::class),
+            ],
+        ],
 
         /* METRICS */
         MetricsStorageInterface::class => [

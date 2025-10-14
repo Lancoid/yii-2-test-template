@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use app\modules\site\assets\error\WebErrorAsset;
+use app\modules\core\assets\error\WebErrorAsset;
 use yii\helpers\Html;
 use yii\web\View;
 

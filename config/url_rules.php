@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 return [
-    '' => '/site/default/index',
-    '/' => '/site/default/index',
-    'captcha' => '/site/default/captcha',
+    '' => '/core/default/index',
+    '/' => '/core/default/index',
+    'captcha' => '/core/default/captcha',
     'login' => '/user/authorization/login',
     'logout' => '/user/authorization/logout',
     'registration' => '/user/registration/index',

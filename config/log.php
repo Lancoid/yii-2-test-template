@@ -37,6 +37,7 @@ return [
             'except' => [
                 'yii\web\HttpException:401',
                 'yii\web\HttpException:404',
+                'audit',
                 'track_api',
             ],
         ],
@@ -75,6 +76,16 @@ return [
                 'yii\web\HttpException:490',
                 Module::class . '::checkAccess',
             ],
+        ],
+        [
+            'class' => AppFileTarget::class,
+            'levels' => ['error', 'warning', 'info'],
+            'maxFileSize' => $maxFileSize,
+            'maxLogFiles' => $maxLogFiles,
+            'logVars' => [],
+            'maskVars' => $maskVars,
+            'logFile' => '@runtime/logs/audit.log',
+            'categories' => ['audit'],
         ],
         [
             'class' => AppFileTarget::class,
