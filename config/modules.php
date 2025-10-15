@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use app\modules\core\CoreModule;
-use app\modules\track\TrackModule;
 use app\modules\user\UserModule;
 
 return [
@@ -12,8 +11,5 @@ return [
     ],
     'user' => [
         'class' => UserModule::class,
-    ],
-    'track' => [
-        'class' => TrackModule::class,
     ],
 ];

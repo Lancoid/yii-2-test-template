@@ -13,4 +13,8 @@ return ArrayHelper::merge($defaultParams, [
             'enableCsrfValidation' => false,
         ],
     ],
+    'container' => ArrayHelper::merge(
+        require __DIR__ . '/common_containers.php',
+        require __DIR__ . '/test_containers.php'
+    ),
 ]);
