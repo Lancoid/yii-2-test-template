@@ -1,5 +1,8 @@
 # Yii Test App
 
+[![CI](https://github.com/Lancoid/yii-2-test-template/workflows/CI/badge.svg)](https://github.com/Lancoid/yii-2-test-template/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/Lancoid/yii-2-test-template/branch/main/graph/badge.svg)](https://codecov.io/gh/Lancoid/yii-2-test-template)
+
 A modular Yii 2 application template with Core, Site, and User modules. It uses PostgreSQL, Redis cache, optional Sentry error reporting, and follows modern PHP 8.4 practices.  
 Development and tooling are Docker-first, with Composer for dependencies and Codeception for testing.
 

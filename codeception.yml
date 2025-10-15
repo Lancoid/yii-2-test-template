@@ -28,5 +28,3 @@ extensions:
 coverage:
   enabled: true
   show_only_summary: true
-  include:
-    - modules/*
