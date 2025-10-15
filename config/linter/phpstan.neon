@@ -58,6 +58,5 @@ parameters:
         - '#Possibly invalid array key type mixed#'
         - '#\:\:t\(\) should return string but returns mixed#'
         - '#attributeLabels\(\) should return#'
-        - '#of method [\S]+\:\:assert#'
         - '#return type has no value type specified in iterable type array#'
         - '#will always evaluate to true#'

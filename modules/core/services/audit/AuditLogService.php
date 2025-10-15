@@ -12,9 +12,9 @@ use yii\web\Request;
 readonly class AuditLogService implements AuditLogServiceInterface
 {
     public function __construct(
-        private bool $enabled = true,
         private LoggerFileServiceInterface $loggerFileService,
         private UserWebServiceInterface $userWebService,
+        private bool $enabled = true,
     ) {}
 
     public function logAuth(string $username, bool $success, ?string $reason = null, array $context = []): void

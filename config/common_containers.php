@@ -96,8 +96,9 @@ return [
         AuditLogServiceInterface::class => [
             ['class' => AuditLogService::class],
             [
-                getenv('AUDIT_ENABLED'),
                 Instance::of(LoggerFileServiceInterface::class),
+                Instance::of(UserWebServiceInterface::class),
+                getenv('AUDIT_ENABLED'),
             ],
         ],
 
