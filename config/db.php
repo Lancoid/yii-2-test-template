@@ -13,7 +13,7 @@ $pass = getenv('SQL_PASSWORD');
 
 return [
     'class' => Connection::class,
-    'dsn' => sprintf('pgsql:host=%s;port=%s;dbname=%s', $host, $port, $db),
+    'dsn' => getenv('DB_DSN'),
     'username' => $user,
     'password' => $pass,
     'charset' => 'utf8',
