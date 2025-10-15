@@ -24,7 +24,7 @@ jobs:
           php-version: '8.4'
           coverage: none
           tools: composer:v2
-          extensions: intl, pdo, pdo_mysql, mbstring, json
+          extensions: intl, pdo, pdo_pgsql, mbstring, json, redis
 
       - name: Get Composer cache directory
         id: composer-cache
