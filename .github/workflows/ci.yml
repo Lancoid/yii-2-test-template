@@ -52,17 +52,7 @@ jobs:
 
   tests:
     name: PHP 8.4 • Unit tests
-
     runs-on: ubuntu-latest
-
-    env:
-      DB_HOST: localhost
-      DB_DATABASE: test_db
-      DB_USERNAME: root
-      DB_PASSWORD: root
-      REDIS_HOST: localhost
-      REDIS_PORT: 6379
-      YII_ENV: test
 
     services:
       redis:
@@ -78,6 +68,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Create .env file
+        run: |
+          cat > .env << EOF
+          DB_HOST=localhost
+          DB_DATABASE=test_db
+          DB_USERNAME=root
+          DB_PASSWORD=root
+          REDIS_HOST=localhost
+          REDIS_PORT=6379
+          YII_ENV=test
+          EOF
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
