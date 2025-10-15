@@ -69,17 +69,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Create .env file
+      - name: Setup .env file
         run: |
-          cat > .env << EOF
-          DB_HOST=localhost
-          DB_DATABASE=test_db
-          DB_USERNAME=root
-          DB_PASSWORD=root
-          REDIS_HOST=localhost
-          REDIS_PORT=6379
-          YII_ENV=test
-          EOF
+          cp .env.example .env
+          sed -i 's/DB_HOST=.*/DB_HOST=localhost/' .env
+          sed -i 's/REDIS_HOST=.*/REDIS_HOST=localhost/' .env
+          sed -i 's/REDIS_PORT=.*/REDIS_PORT=6379/' .env
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
