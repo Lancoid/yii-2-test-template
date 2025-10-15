@@ -87,15 +87,5 @@ return [
             'logFile' => '@runtime/logs/audit.log',
             'categories' => ['audit'],
         ],
-        [
-            'class' => AppFileTarget::class,
-            'levels' => ['error', 'warning', 'info'],
-            'maxFileSize' => $maxFileSize,
-            'maxLogFiles' => $maxLogFiles,
-            'exportInterval' => $maxLogExportInterval,
-            'logVars' => [],
-            'logFile' => '@runtime/logs/track_api.log',
-            'categories' => ['track_api'],
-        ],
     ],
 ];

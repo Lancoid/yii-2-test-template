@@ -23,16 +23,6 @@ use app\modules\core\services\metrics\storage\FileMetricsStorage;
 use app\modules\core\services\metrics\storage\MetricsStorageInterface;
 use app\modules\core\services\sentry\SentryService;
 use app\modules\core\services\sentry\SentryServiceInterface;
-use app\modules\track\dataProviders\TrackDataProvider;
-use app\modules\track\dataProviders\TrackDataProviderInterface;
-use app\modules\track\repositories\TrackRepository;
-use app\modules\track\repositories\TrackRepositoryInterface;
-use app\modules\track\services\create\TrackCreateService;
-use app\modules\track\services\create\TrackCreateServiceInterface;
-use app\modules\track\services\delete\TrackDeleteService;
-use app\modules\track\services\delete\TrackDeleteServiceInterface;
-use app\modules\track\services\update\TrackUpdateService;
-use app\modules\track\services\update\TrackUpdateServiceInterface;
 use app\modules\user\dataProviders\UserDataProvider;
 use app\modules\user\dataProviders\UserDataProviderInterface;
 use app\modules\user\repositories\UserRepository;
@@ -139,12 +129,5 @@ return [
         UserRepositoryInterface::class => UserRepository::class,
         UserUpdateServiceInterface::class => UserUpdateService::class,
         UserWebServiceInterface::class => UserWebService::class,
-
-        /* TRACK */
-        TrackCreateServiceInterface::class => TrackCreateService::class,
-        TrackDataProviderInterface::class => TrackDataProvider::class,
-        TrackDeleteServiceInterface::class => TrackDeleteService::class,
-        TrackRepositoryInterface::class => TrackRepository::class,
-        TrackUpdateServiceInterface::class => TrackUpdateService::class,
     ],
 ];
