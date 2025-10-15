@@ -69,6 +69,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup .env file
+        run: |
+          cp .env.example .env
+          sed -i 's/DB_DSN_TEST=.*/DB_DSN_TEST=sqlite:@runtime/test.db/' .env
+          sed -i 's/REDIS_HOST=.*/REDIS_HOST=localhost/' .env
+          sed -i 's/REDIS_PORT=.*/REDIS_PORT=6379/' .env
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -94,16 +101,9 @@ jobs:
 
       - name: Setup test database
         run: |
-          mkdir -p runtime tests/_output
+          mkdir -p runtime
           touch runtime/test.db
-          chmod -R 777 runtime tests/_output
-
-      - name: Setup .env file
-        run: |
-          cp .env.example .env
-          sed -i 's/DB_DSN_TEST=.*/DB_DSN_TEST=sqlite:@runtime/test.db/' .env
-          sed -i 's/REDIS_HOST=.*/REDIS_HOST=localhost/' .env
-          sed -i 's/REDIS_PORT=.*/REDIS_PORT=6379/' .env
+          chmod -R 777 runtime/test.db
 
       - name: Run migrations
         run: php yii migrate --interactive=0
