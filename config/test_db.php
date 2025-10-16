@@ -5,12 +5,13 @@ declare(strict_types=1);
 use yii\db\Connection;
 use yii\db\pgsql\Schema;
 
+$dsn = getenv('DB_DSN_TEST');
 $user = getenv('SQL_USERNAME');
 $pass = getenv('SQL_PASSWORD');
 
 return [
     'class' => Connection::class,
-    'dsn' => getenv('DB_DSN_TEST'),
+    'dsn' => $dsn,
     'username' => $user,
     'password' => $pass,
     'charset' => 'utf8',
