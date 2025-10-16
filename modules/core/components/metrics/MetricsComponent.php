@@ -6,102 +6,174 @@ namespace app\modules\core\components\metrics;
 
 use app\modules\core\dictionaries\HttpCodeDictionary;
 use app\modules\core\services\metrics\MetricsServiceInterface;
+use Exception;
+use RuntimeException;
+use Throwable;
 use Yii;
-use yii\base\Application;
+use yii\base\Application as YiiBaseApplication;
 use yii\base\BootstrapInterface;
 use yii\base\Component;
 
+/**
+ * Компонент для сбора метрик (latency и ошибок).
+ *
+ * Позволяет отслеживать время выполнения запросов и ошибки приложения.
+ * Метрики отправляются в сервис, реализующий MetricsServiceInterface.
+ *
+ * @property bool $enabled Включает или выключает сбор метрик.
+ * @property array<string> $excludeRoutes Список шаблонов маршрутов, исключённых из сбора метрик.
+ */
 class MetricsComponent extends Component implements BootstrapInterface
 {
+    /**
+     * Включает или выключает сбор метрик.
+     */
     public bool $enabled = true;
 
     /**
-     * @var array<string> The list of routes that should be excluded from the collection of metrics
+     * Список шаблонов маршрутов, которые нужно исключить из сбора метрик.
+     * Примеры шаблонов: 'site/*', 'api/v1/*'.
+     *
+     * @var array<string>
      */
     public array $excludeRoutes = [];
 
     private ?float $startTime = null;
     private ?MetricsServiceInterface $metricsService = null;
 
+    /**
+     * Инициализация компонента и регистрация обработчиков событий приложения.
+     *
+     * @param YiiBaseApplication $app экземпляр приложения Yii
+     */
     public function bootstrap($app): void
     {
         if (!$this->enabled) {
             return;
         }
 
-        $app->on(Application::EVENT_BEFORE_REQUEST, [$this, 'beforeRequest']);
-        $app->on(Application::EVENT_AFTER_REQUEST, [$this, 'afterRequest']);
+        $app->on(YiiBaseApplication::EVENT_BEFORE_REQUEST, [$this, 'beforeRequest']);
+        $app->on(YiiBaseApplication::EVENT_AFTER_REQUEST, [$this, 'afterRequest']);
 
-        // Track errors and exceptions
-        $app->on(Application::EVENT_BEFORE_ACTION, function ($event): void {
-            /* @phpstan-ignore-next-line */
+        // Регистрируем обработчик ошибок перед action
+        $app->on(YiiBaseApplication::EVENT_BEFORE_ACTION, function (): void {
             set_error_handler([$this, 'errorHandler']);
         });
     }
 
+    /**
+     * Запоминает время начала запроса.
+     */
     public function beforeRequest(): void
     {
         $this->startTime = microtime(true);
     }
 
+    /**
+     * Срабатывает после ответа — отправляет метрику в сервис.
+     */
     public function afterRequest(): void
     {
         if (null === $this->startTime) {
             return;
         }
 
-        $app = Yii::$app;
-        $request = $app->request;
-        $response = $app->response;
-        $route = $app->requestedRoute ?? 'unknown';
+        $request = Yii::$app->has('request') ? Yii::$app->request : null;
+        $response = Yii::$app->has('response') ? Yii::$app->response : null;
+        $route = Yii::$app->requestedRoute ?? 'unknown';
 
-        // Skip excluded routes
         if ($this->isExcluded($route)) {
             return;
         }
 
-        $duration = (microtime(true) - $this->startTime) * 1000; // Convert to milliseconds
+        $duration = (microtime(true) - $this->startTime) * 1000.0; // ms
         $statusCode = $response->statusCode ?? HttpCodeDictionary::INTERNAL_SERVER_ERROR;
         $method = $request->method ?? 'UNKNOWN';
 
-        $this->getMetricsService()->recordRequest($route, $duration, $statusCode, $method);
+        try {
+            $this->getMetricsService()->recordRequest($route, $duration, $statusCode, $method);
+        } catch (Throwable) {
+            // Не бросаем исключения из компонента метрик
+        }
     }
 
-    public function errorHandler(int $code, string $string, string $file, string $line): bool
+    /**
+     * Обработчик ошибок. Фиксирует ошибку в сервисе метрик.
+     *
+     * @param int $errno код ошибки
+     * @param string $errMessage сообщение об ошибке
+     * @param string $errFile файл, в котором произошла ошибка
+     * @param int $errLine строка, на которой произошла ошибка
+     *
+     * @return bool возвращает false для передачи обработки другим обработчикам
+     */
+    public function errorHandler(int $errno, string $errMessage, string $errFile, int $errLine): bool
     {
-        $route = Yii::$app->requestedRoute ?? null;
+        try {
+            $route = Yii::$app->requestedRoute ?? null;
 
-        $this->getMetricsService()
-            ->recordError(
-                $this->getErrorType($code),
-                $string,
+            $this->getMetricsService()->recordError(
+                $this->getErrorType($errno),
+                $errMessage,
                 $route,
                 [
-                    'file' => $file,
-                    'line' => $line,
+                    'file' => $errFile,
+                    'line' => $errLine,
                 ]
             );
+        } catch (Throwable) {
+            // Игнорируем ошибки внутри обработчика ошибок
+        }
 
-        return false; // Let other error handlers process this
+        return false;
     }
 
+    /**
+     * Получает сервис метрик из контейнера зависимостей.
+     *
+     * @throws Exception если сервис не зарегистрирован или неверного типа
+     */
     private function getMetricsService(): MetricsServiceInterface
     {
         if (null === $this->metricsService) {
-            $this->metricsService = Yii::$container->get(MetricsServiceInterface::class);
+            $service = Yii::$container->get(MetricsServiceInterface::class);
+
+            if (!$service instanceof MetricsServiceInterface) {
+                throw new RuntimeException('MetricsServiceInterface not available in container.');
+            }
+
+            $this->metricsService = $service;
         }
 
         return $this->metricsService;
     }
 
+    /**
+     * Проверяет, исключён ли маршрут из сбора метрик.
+     *
+     * @param string $route маршрут запроса
+     */
     private function isExcluded(string $route): bool
     {
-        return array_any(
-            $this->excludeRoutes,
-            fn ($excludeRoute): bool => fnmatch($excludeRoute, $route)
-        );
+        foreach ($this->excludeRoutes as $excludeRoute) {
+            if (!is_string($excludeRoute)) {
+                continue;
+            }
+
+            // Используем FNM_PATHNAME для предсказуемого поведения с путями
+            if (fnmatch($excludeRoute, $route, FNM_PATHNAME)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
+    /**
+     * Преобразует код ошибки PHP в строковое представление.
+     *
+     * @param int $code код ошибки
+     */
     private function getErrorType(int $code): string
     {
         $types = [

@@ -8,7 +8,7 @@ use yii\web\AssetBundle;
 
 class WebErrorAsset extends AssetBundle
 {
-    public $sourcePath = '@modules/site/assets/error/static';
+    public $sourcePath = '@modules/core/assets/error/static';
 
     public $css = [
         'css/error.css',
