@@ -106,7 +106,7 @@ jobs:
           chmod -R 777 runtime/test.db
 
       - name: Run migrations
-        run: php yii migrate --interactive=0
+        run: php ./tests/bin/yii migrate/fresh --interactive=0 --compact=1
 
       - name: Run tests
         run: |
