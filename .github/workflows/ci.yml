@@ -72,7 +72,7 @@ jobs:
       - name: Setup .env file
         run: |
           cp .env.example .env
-          sed -i -e 's|DB_DSN_TEST=.*|DB_DSN_TEST=sqlite:@runtime/test.db|' .env
+          sed -i -e 's|DB_DSN_TEST=.*|DB_DSN_TEST=sqlite:runtime/test.db|' .env
           sed -i -e 's|REDIS_HOST=.*|REDIS_HOST=localhost|' .env
           sed -i -e 's|REDIS_PORT=.*|REDIS_PORT=6379|' .env
 
@@ -103,7 +103,9 @@ jobs:
         run: |
           mkdir -p runtime
           touch runtime/test.db
-          chmod -R 777 runtime/test.db
+          chmod 777 runtime
+          chmod 666 runtime/test.db
+          ls -la runtime  # Для отладки
 
       - name: Run migrations
         run: php ./tests/bin/yii migrate/fresh --interactive=0 --compact=1
