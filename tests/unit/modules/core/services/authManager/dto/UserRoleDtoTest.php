@@ -88,7 +88,7 @@ final class UserRoleDtoTest extends Unit
      *     updatedAt: int,
      *     status: bool,
      *     hasAllPermissionEnabled: bool,
-     *     permissions: null|UserPermissionCollection
+     *     userPermissionCollection: null|UserPermissionCollection
      * }>
      */
     public static function successProvider(): array
@@ -103,7 +103,7 @@ final class UserRoleDtoTest extends Unit
                 'updatedAt' => 200,
                 'status' => true,
                 'hasAllPermissionEnabled' => false,
-                'permissions' => new UserPermissionCollection(),
+                'userPermissionCollection' => new UserPermissionCollection(),
             ],
             [
                 'name' => 'user',
@@ -114,7 +114,7 @@ final class UserRoleDtoTest extends Unit
                 'updatedAt' => 400,
                 'status' => false,
                 'hasAllPermissionEnabled' => true,
-                'permissions' => null,
+                'userPermissionCollection' => null,
             ],
         ];
     }
