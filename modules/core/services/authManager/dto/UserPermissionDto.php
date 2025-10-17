@@ -6,16 +6,24 @@ namespace app\modules\core\services\authManager\dto;
 
 /**
  * Data Transfer Object representing a user permission with its metadata.
+ *
+ * @property string $name Globally unique name of the permission.
+ * @property string $description Description of the permission.
+ * @property null|string $ruleName Name of the rule associated with this permission.
+ * @property mixed $data Additional data associated with this permission.
+ * @property int $createdAt UNIX timestamp of creation.
+ * @property int $updatedAt UNIX timestamp of last update.
+ * @property bool $status Whether the user has this permission.
  */
 class UserPermissionDto
 {
     /**
-     * The name of the permission. This must be globally unique.
+     * Globally unique name of the permission.
      */
     private string $name;
 
     /**
-     * The permission description.
+     * Description of the permission.
      */
     private string $description;
 
@@ -30,12 +38,12 @@ class UserPermissionDto
     private mixed $data;
 
     /**
-     * UNIX timestamp representing the permission creation time.
+     * UNIX timestamp of creation.
      */
     private int $createdAt;
 
     /**
-     * UNIX timestamp representing the permission updating time.
+     * UNIX timestamp of last update.
      */
     private int $updatedAt;
 
@@ -44,47 +52,94 @@ class UserPermissionDto
      */
     private bool $status = false;
 
+    /**
+     * UserPermissionDto constructor.
+     */
+    public function __construct(
+        string $name,
+        string $description,
+        ?string $ruleName,
+        mixed $data,
+        int $createdAt,
+        int $updatedAt,
+        bool $status = false
+    ) {
+        $this->name = $name;
+        $this->description = $description;
+        $this->ruleName = $ruleName;
+        $this->data = $data;
+        $this->createdAt = $createdAt;
+        $this->updatedAt = $updatedAt;
+        $this->status = $status;
+    }
+
+    /**
+     * Sets the name of the permission.
+     */
     public function setName(string $name): void
     {
         $this->name = $name;
     }
 
+    /**
+     * Returns the name of the permission.
+     */
     public function getName(): string
     {
         return $this->name;
     }
 
+    /**
+     * Sets the description of the permission.
+     */
     public function setDescription(string $description): void
     {
         $this->description = $description;
     }
 
+    /**
+     * Returns the description of the permission.
+     */
     public function getDescription(): string
     {
         return $this->description;
     }
 
+    /**
+     * Sets the rule name associated with this permission.
+     */
     public function setRuleName(?string $ruleName): void
     {
         $this->ruleName = $ruleName;
     }
 
+    /**
+     * Returns the rule name associated with this permission.
+     */
     public function getRuleName(): ?string
     {
         return $this->ruleName;
     }
 
+    /**
+     * Sets additional data for this permission.
+     */
     public function setData(mixed $data): void
     {
         $this->data = $data;
     }
 
+    /**
+     * Returns additional data for this permission.
+     */
     public function getData(): mixed
     {
         return $this->data;
     }
 
     /**
+     * Sets the creation timestamp.
+     *
      * @param int $createdAt UNIX timestamp
      */
     public function setCreatedAt(int $createdAt): void
@@ -93,6 +148,8 @@ class UserPermissionDto
     }
 
     /**
+     * Returns the creation timestamp.
+     *
      * @return int UNIX timestamp
      */
     public function getCreatedAt(): int
@@ -101,6 +158,8 @@ class UserPermissionDto
     }
 
     /**
+     * Sets the update timestamp.
+     *
      * @param int $updatedAt UNIX timestamp
      */
     public function setUpdatedAt(int $updatedAt): void
@@ -109,6 +168,8 @@ class UserPermissionDto
     }
 
     /**
+     * Returns the update timestamp.
+     *
      * @return int UNIX timestamp
      */
     public function getUpdatedAt(): int
@@ -117,7 +178,7 @@ class UserPermissionDto
     }
 
     /**
-     * @param bool $status Whether the user has this permission
+     * Sets the status of the permission.
      */
     public function setStatus(bool $status): void
     {
@@ -125,7 +186,7 @@ class UserPermissionDto
     }
 
     /**
-     * @return bool Whether the user has this permission
+     * Returns the status of the permission.
      */
     public function getStatus(): bool
     {

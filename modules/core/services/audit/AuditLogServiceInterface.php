@@ -4,31 +4,37 @@ declare(strict_types=1);
 
 namespace app\modules\core\services\audit;
 
+use Throwable;
+
 /**
- * Audit logging service interface.
+ * Interface for the audit logging service.
  *
- * Tracks user actions, data changes, and system events for compliance and security.
+ * Records user actions, data changes, and system events for compliance and security monitoring.
  */
 interface AuditLogServiceInterface
 {
     /**
-     * Log authentication attempt.
+     * Logs an authentication attempt.
      *
-     * @param string $username Username or email
-     * @param bool $success Whether authentication succeeded
-     * @param null|string $reason Failure reason if unsuccessful
-     * @param array $context Additional context
+     * @param string $username username or email used for authentication
+     * @param bool $success indicates whether authentication was successful
+     * @param null|string $reason reason for failure, if authentication was unsuccessful
+     * @param array $context additional context information
+     *
+     * @throws Throwable
      */
     public function logAuth(string $username, bool $success, ?string $reason = null, array $context = []): void;
 
     /**
-     * Log data access.
+     * Logs access to an entity.
      *
-     * @param string $entityType Entity type accessed
-     * @param int|string $entityId Entity ID accessed
-     * @param string $action Action performed (view, list, export)
-     * @param null|int $userId User who accessed the data
-     * @param array $context Additional context
+     * @param string $entityType type of the accessed entity
+     * @param int|string $entityId identifier of the accessed entity
+     * @param string $action Action performed (e.g., view, list, export).
+     * @param null|int $userId ID of the user who accessed the entity
+     * @param array $context additional context information
+     *
+     * @throws Throwable
      */
     public function logAccess(
         string $entityType,
@@ -39,15 +45,17 @@ interface AuditLogServiceInterface
     ): void;
 
     /**
-     * Log data modification.
+     * Logs modification of an entity.
      *
-     * @param string $entityType Entity type modified
-     * @param int|string $entityId Entity ID modified
-     * @param string $action Action performed (create, update, delete)
-     * @param array $oldData Data before modification
-     * @param array $newData Data after modification
-     * @param null|int $userId User who modified the data
-     * @param array $context Additional context
+     * @param string $entityType type of the modified entity
+     * @param int|string $entityId identifier of the modified entity
+     * @param string $action Action performed (e.g., create, update, delete).
+     * @param array $oldData data before modification
+     * @param array $newData data after modification
+     * @param null|int $userId ID of the user who modified the entity
+     * @param array $context additional context information
+     *
+     * @throws Throwable
      */
     public function logModification(
         string $entityType,
@@ -60,13 +68,15 @@ interface AuditLogServiceInterface
     ): void;
 
     /**
-     * Log security event.
+     * Logs a security-related event.
      *
-     * @param string $event Event type (e.g., 'permission_denied', 'suspicious_activity')
-     * @param string $severity Severity level (low, medium, high, critical)
-     * @param string $description Event description
-     * @param null|int $userId Related user ID
-     * @param array $context Additional context
+     * @param string $event Type of the security event (e.g., permission_denied, suspicious_activity).
+     * @param string $severity severity level (low, medium, high, critical)
+     * @param string $description description of the event
+     * @param null|int $userId ID of the related user
+     * @param array $context additional context information
+     *
+     * @throws Throwable
      */
     public function logSecurity(
         string $event,

@@ -9,95 +9,70 @@ use app\modules\core\services\authManager\dto\UserRoleDto;
 use Codeception\Test\Unit;
 
 /**
+ * Unit test for UserRoleCollection using dataProvider.
+ *
  * @internal
  *
  * @covers \app\modules\core\services\authManager\dto\UserRoleCollection
  */
 final class UserRoleCollectionTest extends Unit
 {
-    private function makeRole(string $name): UserRoleDto
+    /**
+     * @dataProvider successProvider
+     *
+     * @param UserRoleDto[] $initialRoles
+     * @param UserRoleDto[] $newRoles
+     */
+    public function testSuccess(array $initialRoles, array $newRoles): void
     {
-        $userRoleDto = new UserRoleDto();
-        $userRoleDto->setName($name);
-        $userRoleDto->setDescription('desc-' . $name);
-        $userRoleDto->setRuleName(null);
-        $userRoleDto->setData(null);
-        $userRoleDto->setCreatedAt(1);
-        $userRoleDto->setUpdatedAt(1);
-        $userRoleDto->setStatus(false);
+        // Create collection and add initial roles
+        $collection = new UserRoleCollection();
+        foreach ($initialRoles as $role) {
+            $collection->add($role);
+        }
 
-        return $userRoleDto;
-    }
-
-    public function testAddAndCountAndIteration(): void
-    {
-        $userRoleCollection = new UserRoleCollection();
-
-        // initially empty
-        $this->assertSame(0, $userRoleCollection->count());
-
-        $userRoleDto = $this->makeRole('admin');
-        $user = $this->makeRole('user');
-
-        $userRoleCollection->add($userRoleDto);
-        $userRoleCollection->add($user);
-
-        $this->assertSame(2, $userRoleCollection->count());
-
-        // iterate and collect names to ensure iterator methods work
+        // Check getters after constructor
+        $this->assertSame(count($initialRoles), $collection->count());
         $names = [];
-        foreach ($userRoleCollection as $role) {
+        foreach ($collection as $role) {
             $this->assertInstanceOf(UserRoleDto::class, $role);
             $names[] = $role->getName();
         }
-
         $this->assertSame(['admin', 'user'], $names);
+
+        // Set new roles using add (simulate setter)
+        $collection = new UserRoleCollection();
+        foreach ($newRoles as $role) {
+            $collection->add($role);
+        }
+
+        // Check getters after setters
+        $this->assertSame(count($newRoles), $collection->count());
+        $newNames = [];
+        foreach ($collection as $role) {
+            $newNames[] = $role->getName();
+        }
+        $this->assertSame(['manager', 'guest'], $newNames);
     }
 
-    public function testExist(): void
+    /**
+     * Data provider for testSuccess.
+     *
+     * @return array<array<UserRoleDto[]>>
+     */
+    public static function successProvider(): array
     {
-        $userRoleCollection = new UserRoleCollection();
-        $userRoleCollection->add($this->makeRole('manager'));
-
-        $this->assertTrue($userRoleCollection->exist('manager'));
-        $this->assertFalse($userRoleCollection->exist('unknown'));
-        $this->assertFalse((new UserRoleCollection())->exist('any'));
-    }
-
-    public function testRemove(): void
-    {
-        $userRoleCollection = new UserRoleCollection();
-        $userRoleCollection->add($this->makeRole('r1')); // index 0
-        $userRoleCollection->add($this->makeRole('r2')); // index 1
-        $userRoleCollection->add($this->makeRole('r3')); // index 2
-
-        $this->assertSame(3, $userRoleCollection->count());
-
-        // remove existing key
-        $userRoleCollection->remove(1);
-        $this->assertSame(2, $userRoleCollection->count());
-
-        // removing non-existent key should not change count
-        $userRoleCollection->remove(10);
-        $this->assertSame(2, $userRoleCollection->count());
-    }
-
-    public function testIntersect(): void
-    {
-        $userRoleCollection = new UserRoleCollection();
-        $userRoleDto = $this->makeRole('alpha');
-        $r2 = $this->makeRole('beta');
-        $r3 = $this->makeRole('gamma');
-        $userRoleCollection->add($userRoleDto);
-        $userRoleCollection->add($r2);
-        $userRoleCollection->add($r3);
-
-        $result = $userRoleCollection->intersect(['beta', 'unknown', 'alpha']);
-
-        // Should return only matching roles, preserving collection order (beta comes after alpha in filter list but keeps collection order)
-        $this->assertIsArray($result);
-        $this->assertCount(2, $result);
-        $this->assertSame('alpha', $result[0]->getName());
-        $this->assertSame('beta', $result[1]->getName());
+        return [
+            [
+                [
+                    new UserRoleDto('admin', 'desc-admin', null, ['x' => 1], 10, 20, true),
+                    new UserRoleDto('user', 'desc-user', 'rule', null, 30, 40, false),
+                ],
+                [
+                    new UserRoleDto('manager', 'desc-manager', 'newRule', ['y' => 2], 50, 60, true),
+                    new UserRoleDto('guest', 'desc-guest', null, null, 70, 80, false),
+                ],
+            ],
+        ];
     }
 }

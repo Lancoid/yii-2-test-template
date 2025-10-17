@@ -20,20 +20,45 @@ use yii\captcha\CaptchaValidator;
 use yii\di\NotInstantiableException;
 use yii\validators\InlineValidator;
 
+/**
+ * User registration form model.
+ * Handles user registration input validation and attribute labels.
+ */
 class UserRegistrationForm extends Model implements UserCreateInputInterface
 {
+    /**
+     * Username for registration.
+     */
     public ?string $username = null;
 
+    /**
+     * Password for registration.
+     */
     public ?string $password = null;
 
+    /**
+     * Email address for registration.
+     */
     public ?string $email = null;
 
+    /**
+     * Phone number for registration.
+     */
     public ?string $phone = null;
 
+    /**
+     * Captcha input.
+     */
     public ?string $captcha = null;
 
+    /**
+     * Agreement to personal data processing.
+     */
     public ?int $agreementPersonalData = null;
 
+    /**
+     * Returns validation rules for user registration form.
+     */
     public function rules(): array
     {
         return [
@@ -52,7 +77,6 @@ class UserRegistrationForm extends Model implements UserCreateInputInterface
                     return substr(preg_replace('/\D/', '', trim($value)) ?? '', -11);
                 },
             ],
-
             [
                 [
                     'username',
@@ -64,20 +88,15 @@ class UserRegistrationForm extends Model implements UserCreateInputInterface
                 ],
                 'required',
             ],
-
             [['username', 'password', 'email'], 'string', 'max' => 64],
             [['phone'], 'string', 'max' => 11],
             [['agreementPersonalData'], 'integer'],
-
             [['phone'], 'match', 'pattern' => '/\d{11}/', 'message' => UserModule::t('validators', 'phoneFormatError')],
-
             [['email'], 'email', 'enableIDN' => true],
             [['email'], 'validateEmail'],
-
             [['username'], WordCountValidator::class, 'max' => 4],
             [['password'], PasswordValidator::class, 'min' => 10, 'max' => 60],
             [['captcha'], CaptchaValidator::class, 'captchaAction' => 'core/default/captcha'],
-
             [
                 ['agreementPersonalData'],
                 'compare',
@@ -90,6 +109,8 @@ class UserRegistrationForm extends Model implements UserCreateInputInterface
     }
 
     /**
+     * Returns attribute labels for user registration form.
+     *
      * @return array<string, string>
      */
     public function attributeLabels(): array
@@ -105,6 +126,12 @@ class UserRegistrationForm extends Model implements UserCreateInputInterface
     }
 
     /**
+     * Validates that the email is not already used by another user.
+     *
+     * @param string $attribute attribute name
+     * @param array $params additional parameters
+     * @param InlineValidator $inlineValidator inline validator instance
+     *
      * @throws InvalidConfigException
      * @throws NotInstantiableException
      */

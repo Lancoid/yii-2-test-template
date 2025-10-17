@@ -1,91 +1,129 @@
 <?php
 
-$finder = PhpCsFixer\Finder::create()
-    ->in(__DIR__ . '/../../')
-    ->notPath(['tests/_support/_generated', 'tests/_output', 'tests/bin'])
-    ->exclude(['vendor', 'web', 'runtime']);
+/** @noinspection SpellCheckingInspection */
 
-return (new PhpCsFixer\Config())
+declare(strict_types=1);
+
+use PhpCsFixer\Config;
+use PhpCsFixer\Finder;
+
+/**
+ * PHP CS Fixer configuration file.
+ *
+ * Defines coding standards and formatting rules for the project.
+ * Adjusts file search paths, excluded directories, and specific fixer rules.
+ * For more information on available rules, see: https://cs.symfony.com/doc/ruleSets/index.html
+ */
+$finder = Finder::create()
+    ->in(__DIR__ . '/../../')
+    ->notPath([
+        'tests/_output',
+        'tests/_support/_generated',
+        'tests/bin',
+    ])
+    ->exclude([
+        'runtime',
+        'vendor',
+        'web',
+    ]);
+
+return new Config()
     ->setCacheFile(__DIR__ . '/../../runtime/linter/.php_cs.cache')
     ->setRules([
-        /* Rule sets https://cs.symfony.com/doc/ruleSets/index.html */
         '@PhpCsFixer' => true,
         '@PHP81Migration' => true,
-        /* Alias https://cs.symfony.com/doc/rules/index.html#alias */
-        'ereg_to_preg' => true,                              /* Замена устаревшие ereg-функции на preg */
-        'no_alias_functions' => true,                        /* Вместо псевдонимов должны использоваться основные функции */
-        'random_api_migration' => true,                      /* Заменяет rand, srand, getrandmax функции их mt_*аналогами или random_int */
-        'set_type_to_cast' => true,                          /* Должен использоваться Cast, а не settype */
-        /* Basic https://cs.symfony.com/doc/rules/index.html#basic */
-        'non_printable_character' => true,                   /* Удаление пробела нулевой ширины (ZWSP), неразрывного пробела (NBSP) и других невидимых символов Юникода */
-        'octal_notation' => false,                           /* Буквенный восьмеричный должен быть в 0o* записи */
-        /* Cast Notation https://cs.symfony.com/doc/rules/index.html#cast-notation */
-        'cast_spaces' => ['space' => 'none'],                /* Между приведением и переменной ни должно быть пробела */
-        'modernize_types_casting' => true,                   /* Заменяет вызовы функций *val оператором соответствующего приведения типа */
-        /* Class Notation https://cs.symfony.com/doc/rules/index.html#class-notation */
-        'ordered_class_elements' => [                        /* Упорядочивает элементы classes/interfaces/traits/enums */
-            'order' => ['use_trait'],
+        'ereg_to_preg' => true,                              /* Replace deprecated ereg functions with preg */
+        'no_alias_functions' => true,                        /* Use main functions instead of aliases */
+        'random_api_migration' => true,                      /* Replace rand, srand, getrandmax with mt_* or random_int */
+        'set_type_to_cast' => true,                          /* Use type cast instead of settype */
+        'non_printable_character' => true,                   /* Remove zero-width space, NBSP, and other invisible Unicode characters */
+        'octal_notation' => false,                           /* Use 0o* notation for octal numbers */
+        'cast_spaces' => ['space' => 'none'],                /* No space between cast and variable */
+        'modernize_types_casting' => true,                   /* Replace *val functions with type cast operators */
+        'ordered_class_elements' => [/* Order elements in classes/interfaces/traits/enums */
+            'order' => [
+                'use_trait',
+            ],
         ],
-        'protected_to_private' => false,                     /* Преобразует protected переменные и методы в private, где это возможно */
-        /* Comment https://cs.symfony.com/doc/rules/index.html#comment */
-        'comment_to_phpdoc' => [
-            'ignored_tags' => ['codeCoverageIgnoreStart', 'codeCoverageIgnoreEnd'],
-        ],                         /* Комментарии с аннотацией должны быть DocBlock */
-        'single_line_comment_style' => [                     /* Комментарии только с одной строкой должны начинаться с // */
-            'comment_types' => ['hash'],
+        'protected_to_private' => false,                     /* Convert protected to private where possible */
+        'comment_to_phpdoc' => [/* Comments with annotation should be DocBlock */
+            'ignored_tags' => [
+                'codeCoverageIgnoreStart',
+                'codeCoverageIgnoreEnd',
+            ],
         ],
-        /* Control Structure https://cs.symfony.com/doc/rules/index.html#control-structure */
-        'no_superfluous_elseif' => false,                    /* Заменяет лишнее elseif на if */
-        'no_unneeded_control_parentheses' => false,          /* Удаление ненужных круглых скобок вокруг операторов управления */
-        /* Function Notation https://cs.symfony.com/doc/rules/index.html#function-notation */
-        'fopen_flag_order' => true,                          /* Порядок флагов в fopen-функциях (b и t должны быть последними) */
-        'method_argument_space' => [                         /* В аргументах метода и вызове метода пробелы после запятой */
-            'on_multiline' => 'ignore',                      /* Как обрабатывать списки аргументов функций, которые содержат символы новой строки */
+        'single_line_comment_style' => [/* Single line comments should start with // */
+            'comment_types' => [
+                'hash',
+            ],
         ],
-        /* Import https://cs.symfony.com/doc/rules/index.html#import */
-        'global_namespace_import' => [                       /* Импортирует или полностью уточняет глобальные classes/functions/constants. */
+        'no_superfluous_elseif' => false,                    /* Replace unnecessary elseif with if */
+        'no_unneeded_control_parentheses' => false,          /* Remove unnecessary parentheses around control statements */
+        'fopen_flag_order' => true,                          /* Flags in fopen should be ordered (b and t last) */
+        'method_argument_space' => [/* Spaces after comma in method arguments and calls */
+            'on_multiline' => 'ignore',                      /* How to handle multiline argument lists */
+        ],
+        'global_namespace_import' => [/* Import or fully qualify global classes/functions/constants */
             'import_classes' => true,
             'import_constants' => false,
             'import_functions' => false,
         ],
-        /* Language Construct https://cs.symfony.com/doc/rules/index.html#language-construct */
-        'dir_constant' => true,                              /* Заменяет dirname(__FILE__) эквивалентной __DIR__константой. */
-        'is_null' => true,                                   /* Заменяет is_null($var) на null === $var /
-        /* Naming https://cs.symfony.com/doc/rules/index.html#naming */
-        'no_homoglyph_names' => true,                        /* Заменить случайное использование омоглифов (не ascii-символов) в именах */
-        /* Operator https://cs.symfony.com/doc/rules/index.html#operator */
-        'assign_null_coalescing_to_coalesce_equal' => false, /* Использовать нулевой оператор присваивания ??= там, где это возможно.*/
-        'concat_space' => ['spacing' => 'one'],              /* Конкатенация должна располагаться в соответствии с конфигурацией */
-        'logical_operators' => true,                         /* Использовать && и || вместо and и or */
-        'no_useless_concat_operator' => true,                /* Не должно быть бесполезных операций concat */
-        /* PHP Tag https://cs.symfony.com/doc/rules/index.html#php-tag */
-        'echo_tag_syntax' => ['format' => 'short'],          /* Формат языковой конструкции */
-        /* PHPDoc https://cs.symfony.com/doc/rules/index.html#phpdoc */
-        'no_superfluous_phpdoc_tags' => [                    /* Удаляет бесполезные теги @param/@var/@return */
-            'allow_mixed' => true,                           /* Разрешен ли тип mixed без описания */
-            'remove_inheritdoc' => true,                     /* Удаление @inheritDoc тегов */
+        'dir_constant' => true,                              /* Replace dirname(__FILE__) with __DIR__ */
+        'is_null' => true,                                   /* Replace is_null($var) with null === $var */
+        'no_homoglyph_names' => true,                        /* Replace accidental use of homoglyphs in names */
+        'assign_null_coalescing_to_coalesce_equal' => false, /* Use ??= operator where possible */
+        'concat_space' => [/* Concatenation spacing configuration */
+            'spacing' => 'one',
         ],
-        'phpdoc_align' => [                                  /* Все phpdoc-тэги должны быть либо выровнены по левому краю, либо по вертикали */
-            'tags' => ['method', 'param', 'property', 'property-read', 'property-write', 'return', 'throws', 'type', 'var'],
+        'logical_operators' => true,                         /* Use && and || instead of and and or */
+        'no_useless_concat_operator' => true,                /* No useless concat operations */
+        'echo_tag_syntax' => ['format' => 'short'],          /* Echo tag format */
+        'no_superfluous_phpdoc_tags' => [/* Remove useless @param/@var/@return tags */
+            'allow_mixed' => true,
+            'remove_inheritdoc' => true,
+        ],
+        'phpdoc_align' => [/* Align phpdoc tags left or vertically */
+            'tags' => [
+                'method',
+                'param',
+                'property',
+                'property-read',
+                'property-write',
+                'return',
+                'throws',
+                'type',
+                'var',
+            ],
             'align' => 'left',
         ],
-        'phpdoc_order' => [                                  /* Аннотации в PHPDoc должны располагаться в определенной последовательности */
+        'phpdoc_order' => [/* Order phpdoc annotations */
             'order' => ['param', 'return', 'throws'],
         ],
-        'phpdoc_to_comment' => [                             /* Однострочный phpDoc разрешён на элементах */
+        'phpdoc_to_comment' => [/* Allow single-line phpDoc on elements */
             'ignored_tags' => ['var'],
         ],
-        /* Semicolon https://cs.symfony.com/doc/rules/index.html#semicolon */
         'multiline_whitespace_before_semicolons' => [
-            'strategy' => 'no_multi_line',                   /* Запрет многострочных пробелов перед закрывающей точкой с запятой */
+            'strategy' => 'no_multi_line',                   /* No multiline whitespace before semicolon */
         ],
-        'semicolon_after_instruction' => false,              /* Инструкции должны заканчиваться точкой с запятой */
-        /* Strict https://cs.symfony.com/doc/rules/index.html#strict */
-        'strict_comparison' => true,                        /* Сравнения должны быть строгими */
-        /* Whitespace https://cs.symfony.com/doc/rules/index.html#whitespace */
-        'blank_line_before_statement' => [                   /* Перечисленным операторам должен предшествовать пустой перевод строки */
-            'statements' => ['break', 'case', 'continue', 'declare', 'default', 'exit', 'goto', 'return', 'switch', 'throw', 'try'],
+        'semicolon_after_instruction' => false,              /* Instructions must end with semicolon */
+        'strict_comparison' => true,                         /* Use strict comparison */
+        'blank_line_before_statement' => [/* Blank line before listed statements */
+            'statements' => [
+                'break',
+                'case',
+                'continue',
+                'declare',
+                'default',
+                'exit',
+                'goto',
+                'return',
+                'switch',
+                'throw',
+                'try',
+            ],
         ],
-        'blank_line_between_import_groups' => true,          /* Вставка пустых строк между use-группами */
+        'blank_line_between_import_groups' => true,          /* Insert blank lines between use groups */
+        'lambda_not_used_import' => true,
+        'array_syntax' => ['syntax' => 'short'],
     ])
     ->setFinder($finder);

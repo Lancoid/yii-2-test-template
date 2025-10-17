@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace app\modules\core\services\metrics;
 
+/**
+ * Interface for application metrics service.
+ * Provides methods to record requests, errors, counters, gauges, and retrieve aggregated metrics.
+ */
 interface MetricsServiceInterface
 {
     /**
@@ -19,7 +23,7 @@ interface MetricsServiceInterface
     /**
      * Record error occurrence.
      *
-     * @param string $type Error type/class name
+     * @param string $type Error type or class name
      * @param string $message Error message
      * @param null|string $route Optional route where error occurred
      * @param array $context Additional context
@@ -49,6 +53,8 @@ interface MetricsServiceInterface
      *
      * @param int $fromTimestamp Start timestamp
      * @param null|int $toTimestamp End timestamp (null = now)
+     *
+     * @return array Aggregated metrics data
      */
     public function getMetrics(int $fromTimestamp, ?int $toTimestamp = null): array;
 
@@ -62,31 +68,19 @@ interface MetricsServiceInterface
      *     from: non-falsy-string,
      *     to: non-falsy-string,
      *     requests: array{
-     *         total: int<0, max>,
+     *         total: 0|int<1, max>,
      *         by_status: array<int<1, max>>,
      *         by_method: array<int<1, max>>,
      *         by_route: array<int<1, max>>,
-     *         response_times: array{
-     *             min: ?float,
-     *             max: ?float,
-     *             avg: ?float,
-     *             p50: ?float,
-     *             p95: ?float,
-     *             p99: ?float,
-     *         },
+     *         response_times: array<string,null|float>,
      *     },
      *     errors: array{
      *         total: int<0, max>,
-     *         by_type: array<int<0, max>>,
-     *         by_route: array<int<0, max>>,
-     *         error_rate: float,
+     *         by_type: array<int<1, max>>,
+     *         by_route: array<int<1, max>>,
+     *         error_rate: 0|float,
      *     },
-     * }
+     * } Metrics summary data
      */
     public function getSummary(int $minutes = 60): array;
-
-    /**
-     * Flush metrics to storage.
-     */
-    public function flush(): void;
 }

@@ -33,7 +33,6 @@ $skippedRules = [
     ExplicitBoolCompareRector::class,
     FlipTypeControlToUseExclusiveTypeRector::class,
     NewlineAfterStatementRector::class,
-    NewlineAfterStatementRector::class,
     NullableCompareToNullRector::class,
     OptionalParametersAfterRequiredRector::class,
     SimplifyEmptyCheckOnEmptyArrayRector::class,

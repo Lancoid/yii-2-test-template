@@ -5,18 +5,28 @@ declare(strict_types=1);
 namespace app\modules\core\services\authManager\dto;
 
 /**
- * Concrete collection of UserRoleDto items with iterator support.
+ * Concrete collection of UserRoleDto items with iterator and countable support.
+ *
+ * Provides methods to add, remove, check existence, count, and intersect user roles.
  */
 class UserRoleCollection implements UserRoleCollectionInterface
 {
     /**
-     * @var UserRoleDto[]
+     * @var array<int, UserRoleDto>
      */
-    private array $dtoList = [];
-
-    private int $count = 0;
+    private array $dtoList;
 
     private int $position = 0;
+
+    /**
+     * UserRoleCollection constructor.
+     *
+     * @param array<int, UserRoleDto> $dtoList
+     */
+    public function __construct(array $dtoList = [])
+    {
+        $this->dtoList = array_values($dtoList);
+    }
 
     /**
      * Rewind the Iterator to the first element.
@@ -58,53 +68,38 @@ class UserRoleCollection implements UserRoleCollectionInterface
         return isset($this->dtoList[$this->position]);
     }
 
-    /**
-     * Add role DTO to the collection.
-     */
     public function add(UserRoleDto $userRoleDto): void
     {
         $this->dtoList[] = $userRoleDto;
-        ++$this->count;
     }
 
-    /**
-     * Remove the role from the collection by its position key.
-     */
     public function remove(int $key): void
     {
         if (array_key_exists($key, $this->dtoList)) {
             unset($this->dtoList[$key]);
-            --$this->count;
+            $this->dtoList = array_values($this->dtoList); // reindex
         }
     }
 
-    /**
-     * Get count of items in the collection.
-     */
     public function count(): int
     {
-        return $this->count;
+        return count($this->dtoList);
     }
 
-    /**
-     * Check if a role with the given name exists in the collection.
-     */
-    public function exist(string $roleName): bool
+    public function exists(string $roleName): bool
     {
-        return array_any($this->dtoList, fn ($data): bool => $data->getName() === $roleName);
+        foreach ($this->dtoList as $dto) {
+            if ($dto->getName() === $roleName) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    /**
-     * Intersect collection with provided role names and return matching DTOs.
-     *
-     * @param array<string> $roleNameList
-     *
-     * @return array<UserRoleDto>
-     */
     public function intersect(array $roleNameList): array
     {
         $result = [];
-
         foreach ($this->dtoList as $dto) {
             if (in_array($dto->getName(), $roleNameList, true)) {
                 $result[] = $dto;

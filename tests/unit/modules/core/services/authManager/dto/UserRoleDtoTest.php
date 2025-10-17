@@ -5,124 +5,117 @@ declare(strict_types=1);
 namespace app\tests\unit\modules\core\services\authManager\dto;
 
 use app\modules\core\services\authManager\dto\UserPermissionCollection;
-use app\modules\core\services\authManager\dto\UserPermissionDto;
 use app\modules\core\services\authManager\dto\UserRoleDto;
 use Codeception\Test\Unit;
 
 /**
+ * Unit test for UserRoleDto.
+ *
  * @internal
  *
  * @covers \app\modules\core\services\authManager\dto\UserRoleDto
  */
 final class UserRoleDtoTest extends Unit
 {
-    public function testPropertyName(): void
-    {
-        $userRoleDto = new UserRoleDto();
-        $userRoleDto->setName('role');
-        $this->assertSame('role', $userRoleDto->getName());
-    }
+    /**
+     * @dataProvider successProvider
+     */
+    public function testSuccess(
+        string $name,
+        string $description,
+        ?string $ruleName,
+        ?array $data,
+        int $createdAt,
+        int $updatedAt,
+        bool $status,
+        bool $hasAllPermissionEnabled,
+        ?UserPermissionCollection $userPermissionCollection
+    ): void {
+        $userRoleDto = new UserRoleDto(
+            $name,
+            $description,
+            $ruleName,
+            $data,
+            $createdAt,
+            $updatedAt,
+            $status,
+            $hasAllPermissionEnabled,
+            $userPermissionCollection
+        );
 
-    public function testPropertyDescription(): void
-    {
-        $userRoleDto = new UserRoleDto();
-        $userRoleDto->setDescription('Role description');
-        $this->assertSame('Role description', $userRoleDto->getDescription());
-    }
-
-    public function testPropertyRuleName(): void
-    {
-        $userRoleDto = new UserRoleDto();
-        $userRoleDto->setRuleName('someRule');
-        $this->assertSame('someRule', $userRoleDto->getRuleName());
-
-        $userRoleDto->setRuleName(null);
-        $this->assertNull($userRoleDto->getRuleName());
-    }
-
-    public function testPropertyData(): void
-    {
-        $userRoleDto = new UserRoleDto();
-        $data = ['k' => 'v'];
-        $userRoleDto->setData($data);
+        $this->assertSame($name, $userRoleDto->getName());
+        $this->assertSame($description, $userRoleDto->getDescription());
+        $this->assertSame($ruleName, $userRoleDto->getRuleName());
         $this->assertSame($data, $userRoleDto->getData());
-    }
-
-    public function testPropertyCreatedAt(): void
-    {
-        $userRoleDto = new UserRoleDto();
-        $userRoleDto->setCreatedAt(1111111111);
-        $this->assertSame(1111111111, $userRoleDto->getCreatedAt());
-    }
-
-    public function testPropertyUpdatedAt(): void
-    {
-        $userRoleDto = new UserRoleDto();
-        $userRoleDto->setUpdatedAt(2222222222);
-        $this->assertSame(2222222222, $userRoleDto->getUpdatedAt());
-    }
-
-    public function testPropertyStatus(): void
-    {
-        $userRoleDto = new UserRoleDto();
-
-        // default should be false
-        $this->assertFalse($userRoleDto->getStatus());
-
-        $userRoleDto->setStatus(true);
-        $this->assertTrue($userRoleDto->getStatus());
-
-        $userRoleDto->setStatus(false);
-        $this->assertFalse($userRoleDto->getStatus());
-    }
-
-    public function testHasAllPermissionEnabledFlag(): void
-    {
-        $userRoleDto = new UserRoleDto();
-
-        // default should be true
-        $this->assertTrue($userRoleDto->isHasAllPermissionEnabled());
-
-        $userRoleDto->setHasAllPermissionEnabled(false);
-        $this->assertFalse($userRoleDto->isHasAllPermissionEnabled());
-
-        $userRoleDto->setHasAllPermissionEnabled(true);
-        $this->assertTrue($userRoleDto->isHasAllPermissionEnabled());
-    }
-
-    public function testPermissionsCollection(): void
-    {
-        $userRoleDto = new UserRoleDto();
-
-        // default should be null
-        $this->assertNull($userRoleDto->getPermissions());
-
-        $userPermissionCollection = new UserPermissionCollection();
-
-        $perm1 = new UserPermissionDto();
-        $perm1->setName('perm.1');
-        $perm1->setDescription('desc1');
-        $perm1->setRuleName(null);
-        $perm1->setData(null);
-        $perm1->setCreatedAt(1);
-        $perm1->setUpdatedAt(2);
-        $perm1->setStatus(true);
-
-        $perm2 = new UserPermissionDto();
-        $perm2->setName('perm.2');
-        $perm2->setDescription('desc2');
-        $perm2->setRuleName('rule2');
-        $perm2->setData(['x' => 1]);
-        $perm2->setCreatedAt(3);
-        $perm2->setUpdatedAt(4);
-        $perm2->setStatus(false);
-
-        $userPermissionCollection->add($perm1);
-        $userPermissionCollection->add($perm2);
-
-        $userRoleDto->setPermission($userPermissionCollection);
-
+        $this->assertSame($createdAt, $userRoleDto->getCreatedAt());
+        $this->assertSame($updatedAt, $userRoleDto->getUpdatedAt());
+        $this->assertSame($status, $userRoleDto->getStatus());
+        $this->assertSame($hasAllPermissionEnabled, $userRoleDto->hasAllPermissionsEnabled());
         $this->assertSame($userPermissionCollection, $userRoleDto->getPermissions());
-        $this->assertEquals(2, $userRoleDto->getPermissions()->count());
+
+        $userRoleDto->setName('newName');
+        $userRoleDto->setDescription('newDescription');
+        $userRoleDto->setRuleName('newRule');
+        $userRoleDto->setData(['y' => 2]);
+        $userRoleDto->setCreatedAt(555);
+        $userRoleDto->setUpdatedAt(666);
+        $userRoleDto->setStatus(!$status);
+        $userRoleDto->setHasAllPermissionsEnabled(!$hasAllPermissionEnabled);
+
+        $newPermissions = new UserPermissionCollection();
+        $userRoleDto->setPermissions($newPermissions);
+
+        $this->assertSame('newName', $userRoleDto->getName());
+        $this->assertSame('newDescription', $userRoleDto->getDescription());
+        $this->assertSame('newRule', $userRoleDto->getRuleName());
+        $this->assertSame(['y' => 2], $userRoleDto->getData());
+        $this->assertSame(555, $userRoleDto->getCreatedAt());
+        $this->assertSame(666, $userRoleDto->getUpdatedAt());
+        $this->assertSame(!$status, $userRoleDto->getStatus());
+        $this->assertSame(!$hasAllPermissionEnabled, $userRoleDto->hasAllPermissionsEnabled());
+        $this->assertSame($newPermissions, $userRoleDto->getPermissions());
+    }
+
+    /**
+     * Data provider for testRoleDto.
+     *
+     * @return array<int, array{
+     *     name: string,
+     *     description: string,
+     *     ruleName: null|string,
+     *     data: null|array<string,mixed>,
+     *     createdAt:int,
+     *     updatedAt: int,
+     *     status: bool,
+     *     hasAllPermissionEnabled: bool,
+     *     permissions: null|UserPermissionCollection
+     * }>
+     */
+    public static function successProvider(): array
+    {
+        return [
+            [
+                'name' => 'admin',
+                'description' => 'Administrator',
+                'ruleName' => 'rule1',
+                'data' => ['x' => 1],
+                'createdAt' => 100,
+                'updatedAt' => 200,
+                'status' => true,
+                'hasAllPermissionEnabled' => false,
+                'permissions' => new UserPermissionCollection(),
+            ],
+            [
+                'name' => 'user',
+                'description' => 'User',
+                'ruleName' => null,
+                'data' => null,
+                'createdAt' => 300,
+                'updatedAt' => 400,
+                'status' => false,
+                'hasAllPermissionEnabled' => true,
+                'permissions' => null,
+            ],
+        ];
     }
 }

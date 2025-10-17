@@ -12,6 +12,11 @@ use yii\web\AssetBundle;
 use yii\web\JqueryAsset;
 use yii\web\YiiAsset;
 
+/**
+ * Asset bundle for the main layout of the web application.
+ *
+ * Registers CSS and third-party assets required for the application's layout styling.
+ */
 class LayoutAsset extends AssetBundle
 {
     public $sourcePath = '@modules/core/assets/layout/static';

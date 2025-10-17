@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace app\modules\core\dictionaries;
 
 /**
- * @description Class containing constants of HTTP Status Codes and method to print HTTP code with its description.
+ * Dictionary of HTTP status codes and their descriptions.
+ *
+ * Provides constants for HTTP status codes and a method to get a human-readable description for each code.
  */
 class HttpCodeDictionary
 {
@@ -74,7 +76,7 @@ class HttpCodeDictionary
     public const int NETWORK_AUTHENTICATION_REQUIRED = 511;                             // RFC6585
 
     /**
-     * @var array<int, string>
+     * @var array<int, string> mapping of HTTP status codes to their descriptions
      */
     private static array $codes = [
         self::CONTINUE => 'Continue',
@@ -143,19 +145,20 @@ class HttpCodeDictionary
     ];
 
     /**
-     * @description Returns string with HTTP code and its description.
+     * Returns a string with the HTTP status code and its description.
      *
-     * @example Usage:
-     * ```php
-     * <?php
+     * @param int $code the HTTP status code
+     *
+     * @return string The code and its description, or 'Unknown HTTP Error.' if not found.
+     *
+     * @example
      * HttpCodeDictionary::getDescription(200); // '200 (OK)'
      * HttpCodeDictionary::getDescription(401); // '401 (Unauthorized)'
-     * ```
      */
-    public static function getDescription(int $code): int|string
+    public static function getDescription(int $code): string
     {
         if (isset(self::$codes[$code])) {
-            return sprintf('%s.', self::$codes[$code]);
+            return sprintf('%d (%s)', $code, self::$codes[$code]);
         }
 
         return 'Unknown HTTP Error.';

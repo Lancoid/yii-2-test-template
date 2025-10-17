@@ -11,6 +11,7 @@ use app\modules\core\services\authManager\dto\UserRoleCollection;
 use app\modules\core\services\authManager\dto\UserRoleDto;
 use app\modules\core\services\authManager\exceptions\UserPermissionNotFoundException;
 use app\modules\core\services\authManager\exceptions\UserRoleNotFoundException;
+use ArrayIterator;
 use Yii;
 use yii\rbac\Assignment;
 use yii\rbac\Item;
@@ -30,13 +31,10 @@ class AuthManagerService implements AuthManagerServiceInterface
     public function getRolesCollections(): UserRoleCollection
     {
         $roles = $this->getAllRoles();
-
         $userRoleCollection = new UserRoleCollection();
 
         foreach ($roles as $role) {
-            $dto = $this->fillRoleDto($role);
-
-            $userRoleCollection->add($dto);
+            $userRoleCollection->add($this->createRoleDto($role));
         }
 
         return $userRoleCollection;
@@ -46,26 +44,18 @@ class AuthManagerService implements AuthManagerServiceInterface
     {
         $role = $this->authManager->getRole($roleName);
 
-        if (!$role) {
-            return null;
-        }
-
-        return $this->fillRoleDto($role);
+        return $role ? $this->createRoleDto($role) : null;
     }
 
     public function getRoleByPermission(UserPermissionDto $userPermissionDto): ?UserRoleDto
     {
-        $userPermissionDto = $this->authManager->getPermission($userPermissionDto->getName());
-
-        if (!$userPermissionDto) {
+        $permission = $this->authManager->getPermission($userPermissionDto->getName());
+        if (!$permission) {
             return null;
         }
-
-        $roles = $this->getAllRoles();
-
-        foreach ($roles as $role) {
-            if ($this->hasChild($role, $userPermissionDto)) {
-                return $this->fillRoleDto($role);
+        foreach ($this->getAllRoles() as $role) {
+            if ($this->hasChild($role, $permission)) {
+                return $this->createRoleDto($role);
             }
         }
 
@@ -74,18 +64,14 @@ class AuthManagerService implements AuthManagerServiceInterface
 
     public function getRolesByUser(int $userId): ?UserRoleCollection
     {
-        $data = $this->authManager->getRolesByUser($userId);
-
-        if (!$data) {
+        $roles = $this->authManager->getRolesByUser($userId);
+        if (!$roles) {
             return null;
         }
-
         $userRoleCollection = new UserRoleCollection();
-
-        foreach ($data as $role) {
-            $dto = $this->fillRoleDto($role);
+        foreach ($roles as $role) {
+            $dto = $this->createRoleDto($role);
             $dto->setStatus(true);
-
             $userRoleCollection->add($dto);
         }
 
@@ -95,24 +81,15 @@ class AuthManagerService implements AuthManagerServiceInterface
     public function getRoleChildren(UserRoleDto $userRoleDto): UserPermissionCollection
     {
         $permissions = $this->authManager->getChildren($userRoleDto->getName());
-
         $userPermissionCollection = new UserPermissionCollection();
-
         foreach ($permissions as $permission) {
-            if (Item::TYPE_PERMISSION !== $permission->type) {
+            if (!$permission instanceof Permission) {
                 continue;
             }
 
-            $dto = new UserPermissionDto();
-
-            $dto->setName($permission->name);
-            $dto->setDescription($permission->description);
-            $dto->setRuleName($permission->ruleName);
-            $dto->setData($permission->data);
-            $dto->setCreatedAt($permission->createdAt);
-            $dto->setUpdatedAt($permission->updatedAt);
-
-            $userPermissionCollection->add($dto);
+            if (Item::TYPE_PERMISSION === $permission->type) {
+                $userPermissionCollection->add($this->createPermissionDto($permission));
+            }
         }
 
         return $userPermissionCollection;
@@ -126,20 +103,17 @@ class AuthManagerService implements AuthManagerServiceInterface
     public function assignRole(UserRoleDto $userRoleDto, int $userId): UserAssignmentDto
     {
         $role = $this->authManager->getRole($userRoleDto->getName());
-
         if (!$role) {
             throw new UserRoleNotFoundException($userRoleDto->getName());
         }
-
         $assignment = $this->authManager->assign($role, $userId);
 
-        return $this->fillAssignmentDto($assignment);
+        return $this->createAssignmentDto($assignment);
     }
 
     public function revokeRole(UserRoleDto $userRoleDto, int $userId): bool
     {
         $role = $this->authManager->getRole($userRoleDto->getName());
-
         if (!$role) {
             throw new UserRoleNotFoundException($userRoleDto->getName());
         }
@@ -150,13 +124,9 @@ class AuthManagerService implements AuthManagerServiceInterface
     public function getPermissionsCollections(): UserPermissionCollection
     {
         $permissions = $this->getAllPermissions();
-
         $userPermissionCollection = new UserPermissionCollection();
-
         foreach ($permissions as $permission) {
-            $dto = $this->fillPermissionDto($permission);
-
-            $userPermissionCollection->add($dto);
+            $userPermissionCollection->add($this->createPermissionDto($permission));
         }
 
         return $userPermissionCollection;
@@ -166,27 +136,18 @@ class AuthManagerService implements AuthManagerServiceInterface
     {
         $permission = $this->authManager->getPermission($permissionName);
 
-        if (!$permission) {
-            return null;
-        }
-
-        return $this->fillPermissionDto($permission);
+        return $permission ? $this->createPermissionDto($permission) : null;
     }
 
     public function getPermissionsByRole(string $roleName): ?UserPermissionCollection
     {
         $permissions = $this->authManager->getPermissionsByRole($roleName);
-
         if (!$permissions) {
             return null;
         }
-
         $userPermissionCollection = new UserPermissionCollection();
-
-        foreach ($permissions as $key => $permission) {
-            $userPermissionCollection->add($this->fillPermissionDto($permission));
-
-            unset($permissions[$key]);
+        foreach ($permissions as $permission) {
+            $userPermissionCollection->add($this->createPermissionDto($permission));
         }
 
         return $userPermissionCollection;
@@ -195,20 +156,14 @@ class AuthManagerService implements AuthManagerServiceInterface
     public function getPermissionsByUser(int $userId): ?UserPermissionCollection
     {
         $permissions = $this->authManager->getPermissionsByUser($userId);
-
         if (!$permissions) {
             return null;
         }
-
         $userPermissionCollection = new UserPermissionCollection();
-
-        foreach ($permissions as $key => $permission) {
-            $dto = $this->fillPermissionDto($permission);
+        foreach ($permissions as $permission) {
+            $dto = $this->createPermissionDto($permission);
             $dto->setStatus(true);
-
             $userPermissionCollection->add($dto);
-
-            unset($permissions[$key]);
         }
 
         return $userPermissionCollection;
@@ -217,22 +172,17 @@ class AuthManagerService implements AuthManagerServiceInterface
     public function hasUserAllPermissionOfRole(UserPermissionDto $userPermissionDto, int $userId): bool
     {
         $role = $this->getRoleByPermission($userPermissionDto);
-
-        if (!$role instanceof UserRoleDto) {
+        if (!$role) {
             return false;
         }
-
-        $this->getRolesByUser($userId);
-
-        $permissionsOfRole = [];
-        foreach ($this->getPermissionsByRole($role->getName()) ?? [] as $permission) {
-            $permissionsOfRole[] = $permission->getName();
-        }
-
-        $permissionsOfUser = [];
-        foreach ($this->getPermissionsByUser($userId) ?? [] as $permission) {
-            $permissionsOfUser[] = $permission->getName();
-        }
+        $permissionsOfRole = array_map(
+            fn (UserPermissionDto $userPermissionDto): string => $userPermissionDto->getName(),
+            iterator_to_array($this->getPermissionsByRole($role->getName()) ?? new ArrayIterator())
+        );
+        $permissionsOfUser = array_map(
+            fn (UserPermissionDto $userPermissionDto): string => $userPermissionDto->getName(),
+            iterator_to_array($this->getPermissionsByUser($userId) ?? new ArrayIterator())
+        );
 
         return empty(array_diff($permissionsOfRole, $permissionsOfUser));
     }
@@ -240,7 +190,6 @@ class AuthManagerService implements AuthManagerServiceInterface
     public function revokeAllUserPermissionsByRole(UserRoleDto $userRoleDto, int $userId): void
     {
         $permissions = $this->getPermissionsByRole($userRoleDto->getName());
-
         foreach ($permissions ?? [] as $permission) {
             $this->revokePermission($permission, $userId);
         }
@@ -254,20 +203,17 @@ class AuthManagerService implements AuthManagerServiceInterface
     public function assignPermission(UserPermissionDto $userPermissionDto, int $userId): UserAssignmentDto
     {
         $permission = $this->authManager->getPermission($userPermissionDto->getName());
-
         if (!$permission) {
             throw new UserPermissionNotFoundException($userPermissionDto->getName());
         }
-
         $assignment = $this->authManager->assign($permission, $userId);
 
-        return $this->fillAssignmentDto($assignment);
+        return $this->createAssignmentDto($assignment);
     }
 
     public function revokePermission(UserPermissionDto $userPermissionDto, int $userId): bool
     {
         $permission = $this->authManager->getPermission($userPermissionDto->getName());
-
         if (!$permission) {
             throw new UserPermissionNotFoundException($userPermissionDto->getName());
         }
@@ -296,46 +242,41 @@ class AuthManagerService implements AuthManagerServiceInterface
         return $this->authManager->getPermissions();
     }
 
-    private function fillPermissionDto(Permission $permission): UserPermissionDto
-    {
-        $userPermissionDto = new UserPermissionDto();
-
-        $userPermissionDto->setName($permission->name);
-        $userPermissionDto->setDescription($permission->description);
-        $userPermissionDto->setRuleName($permission->ruleName);
-        $userPermissionDto->setData($permission->data);
-        $userPermissionDto->setCreatedAt($permission->createdAt);
-        $userPermissionDto->setUpdatedAt($permission->updatedAt);
-
-        return $userPermissionDto;
-    }
-
-    private function fillRoleDto(Role $role): UserRoleDto
-    {
-        $userRoleDto = new UserRoleDto();
-
-        $userRoleDto->setName($role->name);
-        $userRoleDto->setDescription($role->description);
-        $userRoleDto->setRuleName($role->ruleName);
-        $userRoleDto->setData($role->data);
-        $userRoleDto->setCreatedAt($role->createdAt);
-        $userRoleDto->setUpdatedAt($role->updatedAt);
-
-        return $userRoleDto;
-    }
-
     private function hasChild(Item $parent, Item $child): bool
     {
         return $this->authManager->hasChild($parent, $child);
     }
 
-    private function fillAssignmentDto(Assignment $assignment): UserAssignmentDto
+    private function createPermissionDto(Permission $permission): UserPermissionDto
     {
-        $userAssignmentDto = new UserAssignmentDto();
-        $userAssignmentDto->setUserId((int)$assignment->userId);
-        $userAssignmentDto->setAccessName($assignment->roleName);
-        $userAssignmentDto->setCreatedAt($assignment->createdAt);
+        return new UserPermissionDto(
+            $permission->name,
+            $permission->description,
+            $permission->ruleName,
+            $permission->data,
+            $permission->createdAt,
+            $permission->updatedAt
+        );
+    }
 
-        return $userAssignmentDto;
+    private function createRoleDto(Role $role): UserRoleDto
+    {
+        return new UserRoleDto(
+            $role->name,
+            $role->description,
+            $role->ruleName,
+            $role->data,
+            $role->createdAt,
+            $role->updatedAt
+        );
+    }
+
+    private function createAssignmentDto(Assignment $assignment): UserAssignmentDto
+    {
+        return new UserAssignmentDto(
+            (int)$assignment->userId,
+            $assignment->roleName,
+            $assignment->createdAt
+        );
     }
 }

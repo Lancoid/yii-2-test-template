@@ -22,12 +22,12 @@ readonly class UserDataProvider implements UserDataProviderInterface
         try {
             return $this->userRepository->findById($userId);
         } catch (Throwable $throwable) {
-            $exception = new Exception('UserDataProvider::getOne ' . $throwable->getMessage(), $throwable->getCode(), $throwable);
-
-            $this->sentryService->captureException($exception, [
-                'user_id' => $userId,
-                'error_message' => $exception->getMessage(),
-            ]);
+            $this->handleException(
+                new Exception('UserDataProvider::getOne ' . $throwable->getMessage(), $throwable->getCode(), $throwable),
+                [
+                    'user_id' => $userId,
+                ]
+            );
         }
 
         return null;
@@ -38,15 +38,27 @@ readonly class UserDataProvider implements UserDataProviderInterface
         try {
             return $this->userRepository->existByEmail($email, $notId);
         } catch (Throwable $throwable) {
-            $exception = new Exception('UserDataProvider::existByEmail ' . $throwable->getMessage(), $throwable->getCode(), $throwable);
-
-            $this->sentryService->captureException($exception, [
-                'email' => $email,
-                'not_id' => $notId,
-                'error_message' => $throwable->getMessage(),
-            ]);
+            $this->handleException(
+                new Exception('UserDataProvider::existByEmail ' . $throwable->getMessage(), $throwable->getCode(), $throwable),
+                [
+                    'email' => $email,
+                    'not_id' => $notId,
+                ]
+            );
         }
 
-        return true;
+        return false;
+    }
+
+    /**
+     * Handles exceptions and reports them to Sentry.
+     *
+     * @param array<string, mixed> $context Additional context information to include in the Sentry event
+     */
+    private function handleException(Exception $exception, array $context): void
+    {
+        $this->sentryService->captureException($exception, array_merge($context, [
+            'error_message' => $exception->getMessage(),
+        ]));
     }
 }

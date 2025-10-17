@@ -18,8 +18,7 @@ use app\modules\core\services\logger\LoggerFileService;
 use app\modules\core\services\logger\LoggerFileServiceInterface;
 use app\modules\core\services\metrics\MetricsService;
 use app\modules\core\services\metrics\MetricsServiceInterface;
-use app\modules\core\services\metrics\storage\CacheMetricsStorage;
-use app\modules\core\services\metrics\storage\FileMetricsStorage;
+use app\modules\core\services\metrics\storage\MetricsCacheStorage;
 use app\modules\core\services\metrics\storage\MetricsStorageInterface;
 use app\modules\core\services\sentry\SentryService;
 use app\modules\core\services\sentry\SentryServiceInterface;
@@ -104,16 +103,11 @@ return [
 
         /* METRICS */
         MetricsStorageInterface::class => [
-            ['class' => YII_ENV_PROD
-                ? CacheMetricsStorage::class
-                : FileMetricsStorage::class,
-            ],
-            YII_ENV_PROD
-            ? [
+            ['class' => MetricsCacheStorage::class],
+            [
                 Instance::of(CacheServiceInterface::class),
                 getenv('METRICS_CACHE_TTL'),
-            ]
-                : [getenv('METRICS_STORAGE_PATH')],
+            ],
         ],
         MetricsServiceInterface::class => [
             ['class' => MetricsService::class],

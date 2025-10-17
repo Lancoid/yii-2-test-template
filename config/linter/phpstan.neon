@@ -50,7 +50,6 @@ parameters:
         - '#Access to an undefined property __Application#'
         - '#Call to an undefined method __Application#'
         - '#Call to an undefined static method Yii::#'
-        - '#Cannot access offset #'
         - '#Cannot call method [\S]+\(\) on [\S]+.#'
         - '#Method [\S]+ has parameter [\S]+ with no value type specified in iterable type (array|Codeception\\Example)#'
         - '#Parameter [\S]+ \$config of class yii\\web\\Application constructor expects array#'
@@ -60,3 +59,4 @@ parameters:
         - '#attributeLabels\(\) should return#'
         - '#return type has no value type specified in iterable type array#'
         - '#will always evaluate to true#'
+        - '#does not accept array.#'

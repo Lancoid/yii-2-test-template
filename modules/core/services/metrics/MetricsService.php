@@ -8,6 +8,11 @@ use app\modules\core\services\metrics\storage\MetricsStorageInterface;
 
 class MetricsService implements MetricsServiceInterface
 {
+    private const string TYPE_REQUEST = 'request';
+    private const string TYPE_ERROR = 'error';
+    private const string TYPE_COUNTER = 'counter';
+    private const string TYPE_GAUGE = 'gauge';
+
     private MetricsStorageInterface $metricsStorage;
     private bool $enabled;
 
@@ -23,12 +28,12 @@ class MetricsService implements MetricsServiceInterface
             return;
         }
 
-        $this->metricsStorage->store('request', [
+        $this->metricsStorage->store(self::TYPE_REQUEST, [
             'route' => $route,
             'duration' => $duration,
             'status_code' => $statusCode,
             'method' => $method,
-            'timestamp' => time(),
+            'timestamp' => $this->now(),
             'memory_peak' => memory_get_peak_usage(true),
         ]);
     }
@@ -39,12 +44,12 @@ class MetricsService implements MetricsServiceInterface
             return;
         }
 
-        $this->metricsStorage->store('error', [
+        $this->metricsStorage->store(self::TYPE_ERROR, [
             'type' => $type,
             'message' => $message,
             'route' => $route,
             'context' => $context,
-            'timestamp' => time(),
+            'timestamp' => $this->now(),
         ]);
     }
 
@@ -54,11 +59,11 @@ class MetricsService implements MetricsServiceInterface
             return;
         }
 
-        $this->metricsStorage->store('counter', [
+        $this->metricsStorage->store(self::TYPE_COUNTER, [
             'name' => $name,
             'value' => $value,
             'tags' => $tags,
-            'timestamp' => time(),
+            'timestamp' => $this->now(),
         ]);
     }
 
@@ -68,11 +73,11 @@ class MetricsService implements MetricsServiceInterface
             return;
         }
 
-        $this->metricsStorage->store('gauge', [
+        $this->metricsStorage->store(self::TYPE_GAUGE, [
             'name' => $name,
             'value' => $value,
             'tags' => $tags,
-            'timestamp' => time(),
+            'timestamp' => $this->now(),
         ]);
     }
 
@@ -83,26 +88,19 @@ class MetricsService implements MetricsServiceInterface
 
     public function getSummary(int $minutes = 60): array
     {
-        $fromTimestamp = time() - ($minutes * 60);
+        $fromTimestamp = $this->now() - ($minutes * 60);
         $metrics = $this->metricsStorage->retrieve($fromTimestamp);
 
         $summary = [
             'period_minutes' => $minutes,
             'from' => date('Y-m-d H:i:s', $fromTimestamp),
-            'to' => date('Y-m-d H:i:s'),
+            'to' => date('Y-m-d H:i:s', $this->now()),
             'requests' => [
                 'total' => 0,
                 'by_status' => [],
                 'by_method' => [],
                 'by_route' => [],
-                'response_times' => [
-                    'min' => null,
-                    'max' => null,
-                    'avg' => null,
-                    'p50' => null,
-                    'p95' => null,
-                    'p99' => null,
-                ],
+                'response_times' => [],
             ],
             'errors' => [
                 'total' => 0,
@@ -117,7 +115,7 @@ class MetricsService implements MetricsServiceInterface
         foreach ($metrics as $metric) {
             $type = $metric['type'] ?? null;
 
-            if ('request' === $type) {
+            if (self::TYPE_REQUEST === $type) {
                 ++$summary['requests']['total'];
 
                 $statusCode = $metric['status_code'] ?? 0;
@@ -131,7 +129,7 @@ class MetricsService implements MetricsServiceInterface
                 if (isset($metric['duration'])) {
                     $durations[] = $metric['duration'];
                 }
-            } elseif ('error' === $type) {
+            } elseif (self::TYPE_ERROR === $type) {
                 ++$summary['errors']['total'];
 
                 $errorType = $metric['type'] ?? 'Unknown';
@@ -145,21 +143,9 @@ class MetricsService implements MetricsServiceInterface
             }
         }
 
-        // Calculate response time statistics
         /** @var array<float> $durations */
-        if (!empty($durations)) {
-            sort($durations);
-            $summary['requests']['response_times'] = [
-                'min' => round(min($durations), 2),
-                'max' => round(max($durations), 2),
-                'avg' => round(array_sum($durations) / count($durations), 2),
-                'p50' => round($this->percentile($durations, 50), 2),
-                'p95' => round($this->percentile($durations, 95), 2),
-                'p99' => round($this->percentile($durations, 99), 2),
-            ];
-        }
+        $summary['requests']['response_times'] = $this->calculateResponseStats($durations);
 
-        // Calculate error rate
         if ($summary['requests']['total'] > 0) {
             $summary['errors']['error_rate'] = round(
                 ($summary['errors']['total'] / $summary['requests']['total']) * 100,
@@ -170,9 +156,39 @@ class MetricsService implements MetricsServiceInterface
         return $summary;
     }
 
-    public function flush(): void
+    private function now(): int
     {
-        // Flush is handled by storage destructor
+        return time();
+    }
+
+    /**
+     * @param array<float> $durations
+     *
+     * @return array<string, null|float>
+     */
+    private function calculateResponseStats(array $durations): array
+    {
+        if (empty($durations)) {
+            return [
+                'min' => null,
+                'max' => null,
+                'avg' => null,
+                'p50' => null,
+                'p95' => null,
+                'p99' => null,
+            ];
+        }
+
+        sort($durations);
+
+        return [
+            'min' => round(min($durations), 2),
+            'max' => round(max($durations), 2),
+            'avg' => round(array_sum($durations) / count($durations), 2),
+            'p50' => round($this->percentile($durations, 50), 2),
+            'p95' => round($this->percentile($durations, 95), 2),
+            'p99' => round($this->percentile($durations, 99), 2),
+        ];
     }
 
     /**
@@ -180,15 +196,18 @@ class MetricsService implements MetricsServiceInterface
      */
     private function percentile(array $sorted, int $percentile): float
     {
+        if (empty($sorted)) {
+            return 0.0;
+        }
         $index = ($percentile / 100) * (count($sorted) - 1);
         $lower = floor($index);
         $upper = ceil($index);
         $fraction = $index - $lower;
 
         if ($lower === $upper) {
-            return $sorted[$lower];
+            return $sorted[(int)$lower];
         }
 
-        return $sorted[$lower] * (1 - $fraction) + $sorted[$upper] * $fraction;
+        return $sorted[(int)$lower] * (1 - $fraction) + $sorted[(int)$upper] * $fraction;
     }
 }

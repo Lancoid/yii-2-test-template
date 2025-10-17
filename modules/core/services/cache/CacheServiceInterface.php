@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace app\modules\core\services\cache;
 
+/**
+ * Interface for cache service operations.
+ * Provides methods for storing, retrieving, and deleting cache entries.
+ */
 interface CacheServiceInterface
 {
     /**

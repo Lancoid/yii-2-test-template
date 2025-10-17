@@ -9,6 +9,11 @@ namespace app\modules\core\assets\vendor;
 use yii\web\AssetBundle;
 use yii\web\JqueryAsset;
 
+/**
+ * Asset bundle for the jQuery Masked Input plugin.
+ *
+ * Registers the JavaScript file for input masking functionality.
+ */
 class JqueryMaskedInputAsset extends AssetBundle
 {
     public $sourcePath = '@bower/jquery-maskedinput';

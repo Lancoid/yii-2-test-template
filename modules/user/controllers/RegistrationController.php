@@ -16,10 +16,17 @@ use yii\web\Request;
 use yii\web\Response;
 use yii\web\Session;
 
+/**
+ * RegistrationController handles user registration actions.
+ *
+ * Provides registration form display, validation, and user creation logic.
+ */
 class RegistrationController extends Controller
 {
     /**
-     * @return array<string, mixed>
+     * Configures access control for the controller.
+     *
+     * @return array<string, mixed> the behaviors configuration
      */
     public function behaviors(): array
     {
@@ -36,6 +43,19 @@ class RegistrationController extends Controller
         ];
     }
 
+    /**
+     * Handles user registration form display, validation, and user creation.
+     *
+     * Supports AJAX validation and error reporting.
+     *
+     * @param Request $request HTTP request object
+     * @param Response $response HTTP response object
+     * @param UserCreateServiceInterface $userCreateService service for user creation
+     * @param Session $session yii session object
+     * @param SentryServiceInterface $sentryService service for error reporting
+     *
+     * @return array|Response|string the result of registration action
+     */
     public function actionIndex(
         Request $request,
         Response $response,
@@ -57,10 +77,9 @@ class RegistrationController extends Controller
             try {
                 $result = $userCreateService->handle($userRegistrationForm);
             } catch (ServiceFormValidationException $exception) {
-                $userRegistrationForm->addError($exception->getAttribute() ?? '', $exception->getErrorMessage() ?? '');
+                $userRegistrationForm->addError($exception->getAttribute(), $exception->getErrorMessage());
             } catch (Throwable $throwable) {
                 $session->addFlash('error', $throwable->getMessage());
-
                 $sentryService->captureException($throwable);
             }
 

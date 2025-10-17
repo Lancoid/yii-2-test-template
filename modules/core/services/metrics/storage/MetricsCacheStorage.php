@@ -6,6 +6,7 @@ namespace app\modules\core\services\metrics\storage;
 
 use app\modules\core\dictionaries\TimeDurationDictionary;
 use app\modules\core\services\cache\CacheServiceInterface;
+use Random\RandomException;
 
 /**
  * Cache-based metrics storage implementation.
@@ -13,7 +14,7 @@ use app\modules\core\services\cache\CacheServiceInterface;
  * Stores metrics in cache with automatic expiration.
  * Suitable for high-performance scenarios with short-term metrics retention.
  */
-readonly class CacheMetricsStorage implements MetricsStorageInterface
+readonly class MetricsCacheStorage implements MetricsStorageInterface
 {
     private const string METRICS_KEY_PREFIX = 'metrics:';
     private const string METRICS_INDEX_KEY = 'metrics:index';
@@ -21,34 +22,36 @@ readonly class CacheMetricsStorage implements MetricsStorageInterface
 
     public function __construct(
         private CacheServiceInterface $cacheService,
-        private int $ttl = self::DEFAULT_TTL) {}
+        private int $ttl = self::DEFAULT_TTL
+    ) {}
 
+    /**
+     * @throws RandomException
+     */
     public function store(string $type, array $data): void
     {
         /** @var int $timestamp */
-        $timestamp = $data['timestamp'] ?? time();
+        $timestamp = $data['timestamp'] ?? $this->now();
         $key = $this->generateMetricKey($type, $timestamp);
 
         $data['timestamp'] = $timestamp;
         $data['type'] = $type;
 
-        // Store the metric
         $this->cacheService->set($key, $data, $this->ttl);
-
-        // Add to index for retrieval
         $this->addToIndex($key, $type, $timestamp);
     }
 
+    /**
+     * @throws RandomException
+     */
     public function storeBatch(array $metrics): void
     {
         $keyValuePairs = [];
         $indexUpdates = [];
 
         foreach ($metrics as $metric) {
-            /** @var string $type */
-            $type = $metric['type'] ?? 'unknown';
-            /** @var int<1, max> $timestamp */
-            $timestamp = $metric['timestamp'] ?? time();
+            $type = $metric['type'];
+            $timestamp = $metric['timestamp'];
 
             $key = $this->generateMetricKey($type, $timestamp);
 
@@ -75,74 +78,58 @@ readonly class CacheMetricsStorage implements MetricsStorageInterface
 
     public function retrieve(int $fromTimestamp, ?int $toTimestamp = null, ?string $type = null): array
     {
-        $toTimestamp ??= time();
-
-        // Get index
+        $toTimestamp ??= $this->now();
         $index = $this->getIndex();
 
-        // Filter by time range and type
-        $filteredKeys = [];
-        foreach ($index as $entry) {
-            if ($entry['timestamp'] < $fromTimestamp) {
-                continue;
-            }
-            if ($entry['timestamp'] > $toTimestamp) {
-                continue;
-            }
-            if (null !== $type && $entry['type'] !== $type) {
-                continue;
-            }
-
-            $filteredKeys[] = $entry['key'];
-        }
+        $filteredKeys = array_column(
+            array_filter($index, fn (array $entry): bool => $entry['timestamp'] >= $fromTimestamp
+                && $entry['timestamp'] <= $toTimestamp
+                && (null === $type || $entry['type'] === $type)
+            ),
+            'key'
+        );
 
         if (empty($filteredKeys)) {
             return [];
         }
 
-        // Retrieve metrics
+        /** @var array<int, array<string, mixed>> $metrics */
         $metrics = $this->cacheService->multiGet($filteredKeys);
 
-        // Filter out false values (expired or deleted metrics)
-        return array_values(array_filter($metrics, fn ($metric): bool => false !== $metric));
+        return array_values(array_filter($metrics, fn (array $metric): bool => false !== $metric));
     }
 
     public function cleanup(int $olderThanTimestamp): int
     {
         $index = $this->getIndex();
         $deletedCount = 0;
-        $newIndex = [];
 
-        foreach ($index as $entry) {
+        $newIndex = array_filter($index, function (array $entry) use (&$deletedCount, $olderThanTimestamp): bool {
             if ($entry['timestamp'] < $olderThanTimestamp) {
-                // Delete the metric
                 $this->cacheService->delete($entry['key']);
                 ++$deletedCount;
-            } else {
-                $newIndex[] = $entry;
-            }
-        }
 
-        // Update index
-        $this->cacheService->set(self::METRICS_INDEX_KEY, $newIndex, $this->ttl);
+                return false;
+            }
+
+            return true;
+        });
+
+        $this->cacheService->set(self::METRICS_INDEX_KEY, array_values($newIndex), $this->ttl);
 
         return $deletedCount;
     }
 
     /**
-     * Generate a unique cache key for a metric.
+     * @throws RandomException
      */
     private function generateMetricKey(string $type, int $timestamp): string
     {
-        $microtime = microtime(true);
-        $uniqueId = sprintf('%d_%s_%s', $timestamp, $type, str_replace('.', '', (string)$microtime));
+        $uniqueId = bin2hex(random_bytes(8));
 
-        return self::METRICS_KEY_PREFIX . $uniqueId;
+        return self::METRICS_KEY_PREFIX . sprintf('%d_%s_%s', $timestamp, $type, $uniqueId);
     }
 
-    /**
-     * Add metrics key to the index.
-     */
     private function addToIndex(string $key, string $type, int $timestamp): void
     {
         $index = $this->getIndex();
@@ -153,15 +140,11 @@ readonly class CacheMetricsStorage implements MetricsStorageInterface
             'timestamp' => $timestamp,
         ];
 
-        // Keep index sorted by timestamp for efficient cleanup
-        usort($index, fn (array $a, array $b): int => $a['timestamp'] <=> $b['timestamp']);
-
+        $index = $this->sortIndex($index);
         $this->cacheService->set(self::METRICS_INDEX_KEY, $index, $this->ttl);
     }
 
     /**
-     * Get the metrics index.
-     *
      * @return array<array{key: string, type: string, timestamp: int}>
      */
     private function getIndex(): array
@@ -170,5 +153,25 @@ readonly class CacheMetricsStorage implements MetricsStorageInterface
         $index = $this->cacheService->get(self::METRICS_INDEX_KEY);
 
         return is_array($index) ? $index : [];
+    }
+
+    /**
+     * @param array<array{key: string, type: string, timestamp: int}> $index
+     *
+     * @return array<array{key: string, type: string, timestamp: int}>
+     */
+    private function sortIndex(array $index): array
+    {
+        if (empty($index)) {
+            return [];
+        }
+        usort($index, fn (array $a, array $b): int => $a['timestamp'] <=> $b['timestamp']);
+
+        return $index;
+    }
+
+    private function now(): int
+    {
+        return time();
     }
 }

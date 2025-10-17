@@ -28,7 +28,7 @@
         "codeception/module-yii2": "^1.1",
         "codeception/verify": "^3.0 || ^2.2",
         "friendsofphp/php-cs-fixer": "^3.87",
-        "phpstan/phpstan": "2.1.29",
+        "phpstan/phpstan": "^2.1",
         "rector/rector": "^2.1",
         "yiisoft/yii2-debug": "~2.1.0",
         "yiisoft/yii2-faker": "~2.0.0",

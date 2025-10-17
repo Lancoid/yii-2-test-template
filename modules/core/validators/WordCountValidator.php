@@ -8,8 +8,15 @@ use app\modules\core\CoreModule;
 use yii\base\Model;
 use yii\validators\StringValidator;
 
+/**
+ * Validator for word count in a string attribute.
+ * Checks if the number of words is within the specified min and max limits.
+ */
 class WordCountValidator extends StringValidator
 {
+    /**
+     * Initializes error messages for word count validation.
+     */
     public function init(): void
     {
         $this->tooShort = CoreModule::t('validators', 'passwordTooShort');
@@ -19,13 +26,20 @@ class WordCountValidator extends StringValidator
     }
 
     /**
-     * @param Model $model the data model being validated
-     * @param string $attribute the attribute being validated
+     * Validates the specified attribute of the model for word count.
+     *
+     * @param Model $model The data model being validated
+     * @param string $attribute The attribute being validated
      */
     public function validateAttribute($model, $attribute): void
     {
-        /** @var string $attributeValue */
         $attributeValue = $model->{$attribute};
+
+        if (!is_string($attributeValue)) {
+            $this->addError($model, $attribute, $this->tooShort);
+
+            return;
+        }
 
         $wordCount = count(preg_split('/\s+/', $attributeValue) ?: []);
 

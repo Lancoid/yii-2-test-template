@@ -22,7 +22,7 @@ class DatabaseTransactionService implements DatabaseTransactionServiceInterface
         $databaseTransaction = $this->yiiDbConnection->beginTransaction();
 
         try {
-            $result = call_user_func($transaction);
+            $result = $transaction();
 
             $databaseTransaction->commit();
         } catch (Throwable $throwable) {

@@ -11,31 +11,51 @@ use app\modules\user\UserModule;
 use yii\base\Model;
 use yii\captcha\CaptchaValidator;
 
+/**
+ * User login form model.
+ * Handles user login input validation and attribute labels.
+ */
 class UserLoginForm extends Model implements UserLoginInputInterface
 {
+    /**
+     * User email address.
+     */
     public ?string $email = null;
+
+    /**
+     * User password.
+     */
     public ?string $password = null;
+
+    /**
+     * Captcha input.
+     */
     public ?string $captcha = null;
+
+    /**
+     * Remember me flag.
+     */
     public bool $rememberMe = true;
 
+    /**
+     * Returns validation rules for user login form.
+     */
     public function rules(): array
     {
         return [
             [['email', 'password'], 'trim'],
-
             [['email', 'password', 'captcha'], 'required'],
-
             [['email'], 'string', 'max' => 64],
             [['password'], 'string', 'max' => 64],
             [['rememberMe'], 'boolean'],
-
             ['captcha', CaptchaValidator::class, 'captchaAction' => 'core/default/captcha'],
-
             [['email'], 'email', 'enableIDN' => true],
         ];
     }
 
     /**
+     * Returns attribute labels for user login form.
+     *
      * @return array<string, string>
      */
     public function attributeLabels(): array

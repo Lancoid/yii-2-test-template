@@ -9,8 +9,18 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\ErrorAction;
 
+/**
+ * DefaultController handles core module actions such as index, captcha, and error.
+ *
+ * Provides access control and custom actions for the module.
+ */
 class DefaultController extends Controller
 {
+    /**
+     * Returns a list of behaviors for this controller.
+     *
+     * @return array<string, mixed> the behaviors configuration
+     */
     public function behaviors(): array
     {
         return [
@@ -30,6 +40,11 @@ class DefaultController extends Controller
         ];
     }
 
+    /**
+     * Declares external actions for the controller.
+     *
+     * @return array<string, array<string, mixed>> the actions configuration
+     */
     public function actions(): array
     {
         return [
@@ -44,6 +59,11 @@ class DefaultController extends Controller
         ];
     }
 
+    /**
+     * Renders the index page.
+     *
+     * @return string the rendering result
+     */
     public function actionIndex(): string
     {
         return $this->render('index');

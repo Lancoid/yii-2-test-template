@@ -10,25 +10,34 @@ use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 
 /**
- * @property ?int $id
- * @property ?int $created_at
- * @property ?int $updated_at
- * @property ?string $username
- * @property ?string $password_hash
- * @property ?string $auth_key
- * @property ?string $access_token
- * @property ?string $email
- * @property ?string $phone
- * @property ?int $status
- * @property ?int $agreement_personal_data
+ * User ActiveRecord model.
+ * Represents a user entity and provides identity methods for authentication.
+ *
+ * @property null|int $id User ID
+ * @property null|int $created_at Creation timestamp
+ * @property null|int $updated_at Update timestamp
+ * @property null|string $username Username
+ * @property null|string $password_hash Password hash
+ * @property null|string $auth_key Authentication key
+ * @property null|string $access_token Access token
+ * @property null|string $email Email address
+ * @property null|string $phone Phone number
+ * @property null|int $status User status
+ * @property null|int $agreement_personal_data Agreement to personal data processing
  */
 class User extends ActiveRecord implements IdentityInterface
 {
+    /**
+     * Returns the name of the database table associated with this AR class.
+     */
     public static function tableName(): string
     {
         return 'users';
     }
 
+    /**
+     * Returns validation rules for user attributes.
+     */
     public function rules(): array
     {
         return [
@@ -46,7 +55,6 @@ class User extends ActiveRecord implements IdentityInterface
                 ],
                 'required',
             ],
-
             [
                 [
                     'created_at',
@@ -60,33 +68,30 @@ class User extends ActiveRecord implements IdentityInterface
                 [
                     'username',
                     'password_hash',
-
                     'email',
                 ],
                 'string',
                 'max' => 255,
             ],
-
             [
                 ['auth_key', 'access_token'],
                 'string',
                 'max' => 32,
             ],
-
             [
                 ['phone'],
                 'string',
                 'max' => 12,
             ],
-
             [['email'], 'unique'],
             [['access_token'], 'unique'],
-
             [['access_token'], 'default', 'value' => null],
         ];
     }
 
     /**
+     * Returns attribute labels for user fields.
+     *
      * @return array<string, string>
      */
     public function attributeLabels(): array
@@ -106,18 +111,26 @@ class User extends ActiveRecord implements IdentityInterface
         ];
     }
 
+    /**
+     * Returns a new query object for this class.
+     */
     public static function find(): UserQuery
     {
         return new UserQuery();
     }
 
+    /**
+     * Finds an identity by the given ID.
+     *
+     * @param int $id User ID
+     */
     public static function findIdentity($id): ?IdentityInterface
     {
         if (!is_int($id)) {
             return null;
         }
 
-        /** @var ?IdentityInterface $result */
+        /** @var null|IdentityInterface $result */
         $result = static::find()->byId($id)->one();
 
         if ($result && !$result instanceof self) {
@@ -127,6 +140,12 @@ class User extends ActiveRecord implements IdentityInterface
         return $result;
     }
 
+    /**
+     * Finds an identity by the given access token.
+     *
+     * @param string $token Access token
+     * @param null|mixed $type Token type (unused)
+     */
     public static function findIdentityByAccessToken($token, $type = null): ?IdentityInterface
     {
         if (!is_string($token)) {
@@ -135,7 +154,7 @@ class User extends ActiveRecord implements IdentityInterface
 
         $token = trim($token);
 
-        /** @var ?IdentityInterface $result */
+        /** @var null|IdentityInterface $result */
         $result = static::find()->byAccessToken($token)->one();
 
         if ($result && !$result instanceof self) {
@@ -145,16 +164,27 @@ class User extends ActiveRecord implements IdentityInterface
         return $result;
     }
 
+    /**
+     * Returns the user ID.
+     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    /**
+     * Returns the authentication key.
+     */
     public function getAuthKey(): ?string
     {
         return $this->auth_key;
     }
 
+    /**
+     * Validates the given authentication key.
+     *
+     * @param string $authKey Authentication key to validate
+     */
     public function validateAuthKey($authKey): bool
     {
         return $this->auth_key === $authKey;

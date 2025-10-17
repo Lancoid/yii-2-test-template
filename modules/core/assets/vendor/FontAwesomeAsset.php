@@ -6,6 +6,11 @@ namespace app\modules\core\assets\vendor;
 
 use yii\web\AssetBundle;
 
+/**
+ * Asset bundle for Font Awesome icon library.
+ *
+ * Registers Font Awesome CSS and webfonts for use in the application.
+ */
 class FontAwesomeAsset extends AssetBundle
 {
     public $sourcePath = '@bower/font-awesome';
@@ -18,6 +23,6 @@ class FontAwesomeAsset extends AssetBundle
         'only' => [
             'css/*',
             'webfonts/*',
-        ]
+        ],
     ];
 }

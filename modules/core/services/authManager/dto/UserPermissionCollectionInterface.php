@@ -9,32 +9,34 @@ use Iterator;
 /**
  * Interface for a collection of UserPermissionDto objects.
  *
+ * Provides methods to add, remove, check existence, count, and intersect permissions.
+ *
  * @extends Iterator<int, UserPermissionDto>
  */
 interface UserPermissionCollectionInterface extends Iterator
 {
     /**
-     * Add permission DTO to the collection.
+     * Adds a permission DTO to the collection.
      */
     public function add(UserPermissionDto $userPermissionDto): void;
 
     /**
-     * Remove permission from the collection by its position key.
+     * Removes a permission from the collection by its position key.
      */
     public function remove(int $key): void;
 
     /**
-     * Get count of items in the collection.
+     * Gets the count of items in the collection.
      */
     public function count(): int;
 
     /**
-     * Check if the permission with the specified name exists in the collection.
+     * Checks if a permission with the specified name exists in the collection.
      */
-    public function exist(string $permissionName): bool;
+    public function exists(string $permissionName): bool;
 
     /**
-     * Intersect collection with provided permission names and return matching DTOs.
+     * Intersects the collection with provided permission names and returns matching DTOs.
      *
      * @param array<string> $permissionNameList
      *

@@ -7,22 +7,28 @@ namespace app\modules\core\components\assetManager;
 use RuntimeException;
 use yii\web\AssetManager;
 
+/**
+ * Read-only AssetManager for pre-published assets.
+ *
+ * This manager only allows access to assets that have already been published.
+ * Any attempt to publish or link new assets will result in an exception.
+ */
 class AssetManagerReadOnly extends AssetManager
 {
     /**
-     * Путь к файлу, содержащему предзапубликованные ассеты.
+     * Path to the file containing pre-published assets.
      */
-    public const string ASSETS_FILE = '/assets/assets.php';
+    public const ASSETS_FILE = '/assets/assets.php';
 
     /**
-     * Возвращает путь и URL для уже опубликованной директории.
+     * Returns the path and URL for an already published directory.
      *
-     * @param string $src Источник директории
-     * @param array<string,mixed> $options Опции публикации
+     * @param string $src source directory path
+     * @param array<string, mixed> $options publishing options
      *
-     * @return array{0:string,1:string} [destinationPath, publicUrl]
+     * @return array{0: string, 1: string} [destinationPath, publicUrl]
      *
-     * @throws RuntimeException Если публикация запрещена или директория отсутствует
+     * @throws RuntimeException if publishing is forbidden or directory is missing
      */
     protected function publishDirectory($src, $options): array
     {
@@ -56,13 +62,13 @@ class AssetManagerReadOnly extends AssetManager
     }
 
     /**
-     * Возвращает файл и URL для уже опубликованного файла.
+     * Returns the file path and URL for an already published file.
      *
-     * @param string $src Путь к исходному файлу
+     * @param string $src source file path
      *
-     * @return array{0:string,1:string} [destinationFile, publicUrl]
+     * @return array{0: string, 1: string} [destinationFile, publicUrl]
      *
-     * @throws RuntimeException Если файл недоступен или нужно пересоздать
+     * @throws RuntimeException if file is not accessible or needs to be recreated
      */
     protected function publishFile($src): array
     {
@@ -105,7 +111,9 @@ class AssetManagerReadOnly extends AssetManager
     }
 
     /**
-     * Формирует исключение для файлов с понятным сообщением.
+     * Creates an exception for files with a clear message.
+     *
+     * @param string $src source file path
      */
     private function fileException(string $src): RuntimeException
     {
@@ -113,7 +121,9 @@ class AssetManagerReadOnly extends AssetManager
     }
 
     /**
-     * Формирует исключение для директорий.
+     * Creates an exception for directories with a clear message.
+     *
+     * @param string $src source directory path
      */
     private function directoryException(string $src): RuntimeException
     {

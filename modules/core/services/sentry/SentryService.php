@@ -20,11 +20,19 @@ class SentryService extends SentryTarget implements SentryServiceInterface
 
     public function captureMessage(string $message, array $params = []): ?string
     {
+        if (!$this->enabled) {
+            return null;
+        }
+
         return $this->getBuilder()->setMessage($message)->setExtra($params)->send();
     }
 
     public function captureException(Throwable $throwable, array $params = []): ?string
     {
+        if (!$this->enabled) {
+            return null;
+        }
+
         return $this->getBuilder()->setException($throwable)->setExtra($params)->send();
     }
 

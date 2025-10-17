@@ -10,8 +10,18 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
 
+/**
+ * MetricsController provides endpoints for metrics summary and health checks.
+ *
+ * Access restricted to administrators.
+ */
 class MetricsController extends Controller
 {
+    /**
+     * Configures access control for the controller.
+     *
+     * @return array<string, mixed> the behaviors configuration
+     */
     public function behaviors(): array
     {
         return [
@@ -28,8 +38,15 @@ class MetricsController extends Controller
     }
 
     /**
-     * Get metrics summary
-     * Usage: /core/metrics/summary?minutes=60.
+     * Returns metrics summary for the specified period.
+     *
+     * Example usage: `/core/metrics/summary?minutes=60`
+     *
+     * @param MetricsServiceInterface $metricsService service for metrics aggregation
+     * @param Response $response yii response object
+     * @param int $minutes number of minutes to summarize (default: 60)
+     *
+     * @return Response JSON response with metrics summary
      */
     public function actionSummary(
         MetricsServiceInterface $metricsService,
@@ -42,8 +59,14 @@ class MetricsController extends Controller
     }
 
     /**
-     * Health check endpoint
-     * Usage: /core/metrics/health.
+     * Health check endpoint for monitoring system status.
+     *
+     * Example usage: `/core/metrics/health`
+     *
+     * @param MetricsServiceInterface $metricsService service for metrics aggregation
+     * @param Response $response yii response object
+     *
+     * @return Response JSON response with health status
      */
     public function actionHealth(
         MetricsServiceInterface $metricsService,
@@ -67,7 +90,6 @@ class MetricsController extends Controller
         if ($summary['errors']['error_rate'] > 5
             || ($summary['requests']['response_times']['avg'] ?? 0) > 1000) {
             $health['status'] = 'degraded';
-
             $response->statusCode = 503;
         }
 

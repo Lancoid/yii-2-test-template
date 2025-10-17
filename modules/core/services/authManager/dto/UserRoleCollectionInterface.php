@@ -9,31 +9,33 @@ use Iterator;
 /**
  * Interface for a collection of UserRoleDto objects.
  *
+ * Provides methods to add, remove, count, and intersect user roles.
+ *
  * @extends Iterator<int, UserRoleDto>
  */
 interface UserRoleCollectionInterface extends Iterator
 {
     /**
-     * Add role DTO to the collection.
+     * Adds a UserRoleDto to the collection.
      */
     public function add(UserRoleDto $userRoleDto): void;
 
     /**
-     * Remove the role from the collection by its position key.
+     * Removes a UserRoleDto from the collection by its position key.
      */
     public function remove(int $key): void;
 
     /**
-     * Get count of items in the collection.
+     * Gets the count of items in the collection.
      */
     public function count(): int;
 
     /**
-     * Intersect collection with provided role names and return matching DTOs.
+     * Intersects the collection with provided role names and returns matching DTOs.
      *
      * @param array<string> $roleNameList
      *
-     * @return array<UserRoleDto>
+     * @return array<int, UserRoleDto>
      */
     public function intersect(array $roleNameList): array;
 }

@@ -15,36 +15,43 @@ use yii\base\BootstrapInterface;
 use yii\base\Component;
 
 /**
- * Компонент для сбора метрик (latency и ошибок).
+ * Component for collecting application metrics (latency and errors).
  *
- * Позволяет отслеживать время выполнения запросов и ошибки приложения.
- * Метрики отправляются в сервис, реализующий MetricsServiceInterface.
+ * Tracks request execution time and application errors.
+ * Metrics are sent to a service implementing MetricsServiceInterface.
  *
- * @property bool $enabled Включает или выключает сбор метрик.
- * @property array<string> $excludeRoutes Список шаблонов маршрутов, исключённых из сбора метрик.
+ * @property bool $enabled Enables or disables metrics collection.
+ * @property array<string> $excludeRoutes List of route patterns to exclude from metrics collection.
  */
 class MetricsComponent extends Component implements BootstrapInterface
 {
     /**
-     * Включает или выключает сбор метрик.
+     * Enables or disables metrics collection.
      */
     public bool $enabled = true;
 
     /**
-     * Список шаблонов маршрутов, которые нужно исключить из сбора метрик.
-     * Примеры шаблонов: 'site/*', 'api/v1/*'.
+     * List of route patterns to exclude from metrics collection.
+     * Example patterns: 'site/*', 'api/v1/*'.
      *
      * @var array<string>
      */
     public array $excludeRoutes = [];
 
+    /**
+     * Request start time in microseconds.
+     */
     private ?float $startTime = null;
+
+    /**
+     * Metrics service instance.
+     */
     private ?MetricsServiceInterface $metricsService = null;
 
     /**
-     * Инициализация компонента и регистрация обработчиков событий приложения.
+     * Initializes the component and registers application event handlers.
      *
-     * @param YiiBaseApplication $app экземпляр приложения Yii
+     * @param YiiBaseApplication $app yii application instance
      */
     public function bootstrap($app): void
     {
@@ -55,14 +62,14 @@ class MetricsComponent extends Component implements BootstrapInterface
         $app->on(YiiBaseApplication::EVENT_BEFORE_REQUEST, [$this, 'beforeRequest']);
         $app->on(YiiBaseApplication::EVENT_AFTER_REQUEST, [$this, 'afterRequest']);
 
-        // Регистрируем обработчик ошибок перед action
+        // Register error handler before action execution
         $app->on(YiiBaseApplication::EVENT_BEFORE_ACTION, function (): void {
             set_error_handler([$this, 'errorHandler']);
         });
     }
 
     /**
-     * Запоминает время начала запроса.
+     * Stores the request start time.
      */
     public function beforeRequest(): void
     {
@@ -70,7 +77,7 @@ class MetricsComponent extends Component implements BootstrapInterface
     }
 
     /**
-     * Срабатывает после ответа — отправляет метрику в сервис.
+     * Called after the response is sent — sends metrics to the service.
      */
     public function afterRequest(): void
     {
@@ -93,19 +100,19 @@ class MetricsComponent extends Component implements BootstrapInterface
         try {
             $this->getMetricsService()->recordRequest($route, $duration, $statusCode, $method);
         } catch (Throwable) {
-            // Не бросаем исключения из компонента метрик
+            // Do not throw exceptions from the metrics component
         }
     }
 
     /**
-     * Обработчик ошибок. Фиксирует ошибку в сервисе метрик.
+     * Error handler. Records the error in the metrics service.
      *
-     * @param int $errno код ошибки
-     * @param string $errMessage сообщение об ошибке
-     * @param string $errFile файл, в котором произошла ошибка
-     * @param int $errLine строка, на которой произошла ошибка
+     * @param int $errno error code
+     * @param string $errMessage error message
+     * @param string $errFile file where the error occurred
+     * @param int $errLine line number where the error occurred
      *
-     * @return bool возвращает false для передачи обработки другим обработчикам
+     * @return bool always returns false to pass handling to other handlers
      */
     public function errorHandler(int $errno, string $errMessage, string $errFile, int $errLine): bool
     {
@@ -122,16 +129,16 @@ class MetricsComponent extends Component implements BootstrapInterface
                 ]
             );
         } catch (Throwable) {
-            // Игнорируем ошибки внутри обработчика ошибок
+            // Ignore errors inside the error handler
         }
 
         return false;
     }
 
     /**
-     * Получает сервис метрик из контейнера зависимостей.
+     * Returns the metrics service from the dependency injection container.
      *
-     * @throws Exception если сервис не зарегистрирован или неверного типа
+     * @throws Exception if the service is not registered or of the wrong type
      */
     private function getMetricsService(): MetricsServiceInterface
     {
@@ -149,9 +156,11 @@ class MetricsComponent extends Component implements BootstrapInterface
     }
 
     /**
-     * Проверяет, исключён ли маршрут из сбора метрик.
+     * Checks if the route is excluded from metrics collection.
      *
-     * @param string $route маршрут запроса
+     * @param string $route request route
+     *
+     * @return bool true if the route is excluded, false otherwise
      */
     private function isExcluded(string $route): bool
     {
@@ -160,7 +169,7 @@ class MetricsComponent extends Component implements BootstrapInterface
                 continue;
             }
 
-            // Используем FNM_PATHNAME для предсказуемого поведения с путями
+            // Use FNM_PATHNAME for predictable path matching
             if (fnmatch($excludeRoute, $route, FNM_PATHNAME)) {
                 return true;
             }
@@ -170,9 +179,11 @@ class MetricsComponent extends Component implements BootstrapInterface
     }
 
     /**
-     * Преобразует код ошибки PHP в строковое представление.
+     * Converts a PHP error code to its string representation.
      *
-     * @param int $code код ошибки
+     * @param int $code error code
+     *
+     * @return string error type as string
      */
     private function getErrorType(int $code): string
     {

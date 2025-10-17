@@ -49,7 +49,7 @@ return ArrayHelper::merge(
                 'enableAutoLogin' => true,
             ],
             'errorHandler' => [
-                'errorAction' => 'site/default/error',
+                'errorAction' => 'core/default/error',
             ],
             'urlManager' => [
                 'baseUrl' => '/',

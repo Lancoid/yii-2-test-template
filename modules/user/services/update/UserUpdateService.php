@@ -47,7 +47,7 @@ readonly class UserUpdateService implements UserUpdateServiceInterface
      */
     private function assignRole(UserUpdateInputInterface $userUpdateInput, int $id): void
     {
-        if (in_array($userUpdateInput->getRole(), [null, '', '0'], true)) {
+        if (!$userUpdateInput->getRole()) {
             throw new UserRoleNotFoundException($userUpdateInput->getRole());
         }
 

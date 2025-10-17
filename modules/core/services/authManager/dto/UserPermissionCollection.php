@@ -5,18 +5,69 @@ declare(strict_types=1);
 namespace app\modules\core\services\authManager\dto;
 
 /**
- * Concrete collection of UserPermissionDto items with iterator support.
+ * Concrete collection of UserPermissionDto items with iterator and countable support.
+ *
+ * Provides methods to add, remove, check existence, and intersect permissions.
  */
 class UserPermissionCollection implements UserPermissionCollectionInterface
 {
     /**
-     * @var array<UserPermissionDto>
+     * @var array<int, UserPermissionDto>
      */
-    private array $dtoList = [];
-
-    private int $count = 0;
+    private array $dtoList;
 
     private int $position = 0;
+
+    /**
+     * UserPermissionCollection constructor.
+     *
+     * @param array<int, UserPermissionDto> $dtoList
+     */
+    public function __construct(array $dtoList = [])
+    {
+        $this->dtoList = array_values($dtoList);
+    }
+
+    public function add(UserPermissionDto $userPermissionDto): void
+    {
+        $this->dtoList[] = $userPermissionDto;
+    }
+
+    public function remove(int $key): void
+    {
+        if (array_key_exists($key, $this->dtoList)) {
+            unset($this->dtoList[$key]);
+            $this->dtoList = array_values($this->dtoList); // reindex
+        }
+    }
+
+    public function count(): int
+    {
+        return count($this->dtoList);
+    }
+
+    public function exists(string $permissionName): bool
+    {
+        foreach ($this->dtoList as $dto) {
+            if ($dto->getName() === $permissionName) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function intersect(array $permissionNameList): array
+    {
+        $result = [];
+        foreach ($this->dtoList as $dto) {
+            if (in_array($dto->getName(), $permissionNameList, true)) {
+                $result[] = $dto;
+            }
+        }
+
+        return $result;
+    }
 
     /**
      * Rewind the Iterator to the first element.
@@ -56,61 +107,5 @@ class UserPermissionCollection implements UserPermissionCollectionInterface
     public function valid(): bool
     {
         return isset($this->dtoList[$this->position]);
-    }
-
-    /**
-     * Add permission DTO to the collection.
-     */
-    public function add(UserPermissionDto $userPermissionDto): void
-    {
-        $this->dtoList[] = $userPermissionDto;
-        ++$this->count;
-    }
-
-    /**
-     * Remove permission from the collection by its position key.
-     */
-    public function remove(int $key): void
-    {
-        if (array_key_exists($key, $this->dtoList)) {
-            unset($this->dtoList[$key]);
-            --$this->count;
-        }
-    }
-
-    /**
-     * Get count of items in the collection.
-     */
-    public function count(): int
-    {
-        return $this->count;
-    }
-
-    /**
-     * Check if a permission with the given name exists in the collection.
-     */
-    public function exist(string $permissionName): bool
-    {
-        return array_any($this->dtoList, fn ($dto): bool => $dto->getName() === $permissionName);
-    }
-
-    /**
-     * Intersect collection with provided permission names and return matching DTOs.
-     *
-     * @param array<string> $permissionNameList
-     *
-     * @return array<int, UserPermissionDto>
-     */
-    public function intersect(array $permissionNameList): array
-    {
-        $result = [];
-
-        foreach ($this->dtoList as $dto) {
-            if (in_array($dto->getName(), $permissionNameList, true)) {
-                $result[] = $dto;
-            }
-        }
-
-        return $result;
     }
 }

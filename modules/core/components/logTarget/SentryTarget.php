@@ -27,31 +27,44 @@ use function Sentry\captureEvent;
 use function Sentry\captureException;
 use function Sentry\withScope;
 
+/**
+ * Sentry log target for Yii2 application.
+ *
+ * Sends log messages and exceptions to Sentry with user and request context.
+ */
 class SentryTarget extends Target
 {
     /**
-     * @var string sentry client key
+     * @var string sentry DSN key
      */
     public string $dsn;
 
     /**
-     * @var array<string, mixed> options of the Sentry
+     * @var array<string, mixed> sentry client options
      */
     public array $clientOptions = [];
 
     /**
-     * @var bool Write the context information. The default implementation will dump user information, system variables, etc.
+     * @var bool Whether to include context information (user, system variables, etc.).
      */
     public bool $context = true;
 
+    /**
+     * @var bool whether Sentry logging is enabled
+     */
     public bool $enabled = false;
 
     /**
-     * @var callable Callback function that can modify extra's array
+     * @var null|callable callback to modify extra data
      */
     public $extraCallback;
 
-    public function __construct($config = [])
+    /**
+     * SentryTarget constructor.
+     *
+     * @param array<string, mixed> $config configuration array
+     */
+    public function __construct(array $config = [])
     {
         parent::__construct($config);
 
@@ -60,33 +73,30 @@ class SentryTarget extends Target
 
         $options = $clientBuilder->getOptions();
 
-        /**
-         * @var callable(IntegrationInterface[]): IntegrationInterface[] $integrations
-         *
-         * @phpstan-ignore-next-line
-         */
-        $integrations = (static fn (array $integrations): array => array_filter($integrations, static function (IntegrationInterface $integration): bool {
-            if ($integration instanceof ErrorListenerIntegration) {
-                return false;
+        /* Filters out error, exception, and fatal error integrations. */
+        $options->setIntegrations(static fn (array $integrations): array => array_filter(
+            $integrations,
+            static function (IntegrationInterface $integration): bool {
+                return !($integration instanceof ErrorListenerIntegration
+                    || $integration instanceof ExceptionListenerIntegration
+                    || $integration instanceof FatalErrorListenerIntegration);
             }
-
-            if ($integration instanceof ExceptionListenerIntegration) {
-                return false;
-            }
-
-            return !$integration instanceof FatalErrorListenerIntegration;
-        }));
-
-        $options->setIntegrations($integrations);
+        ));
 
         SentrySdk::init()->bindClient($clientBuilder->getClient());
     }
 
+    /**
+     * Returns context message (empty for Sentry).
+     */
     protected function getContextMessage(): string
     {
         return '';
     }
 
+    /**
+     * Exports log messages to Sentry.
+     */
     public function export(): void
     {
         /** @var array<array<int, mixed>> $message */
@@ -111,13 +121,8 @@ class SentryTarget extends Target
             }
 
             try {
-                /**
-                 * @var YiiWebUser<AppWebUser> $user
-                 *
-                 * @phpstan-ignore-next-line
-                 */
+                /** @var null|YiiWebUser<AppWebUser> $user */
                 $user = Yii::$app->has('user', true) ? Yii::$app->get('user', false) : null;
-                /* @phpstan-ignore-next-line */
                 if ($user && ($identity = $user->getIdentity(false))) {
                     $data['userData']['id'] = $identity->getId();
                 }
@@ -198,11 +203,13 @@ class SentryTarget extends Target
     /**
      * Calls the extra callback if it exists.
      *
-     * @phpstan-ignore-next-line
+     * @param mixed $text log message text
+     * @param array<string, mixed> $data log data
+     *
+     * @return array<string, mixed> modified log data
      */
     public function runExtraCallback(mixed $text, array $data): array
     {
-        /* @phpstan-ignore-next-line */
         if (is_callable($this->extraCallback)) {
             $data['extra'] = call_user_func($this->extraCallback, $text, $data['extra'] ?? []);
         }
@@ -212,6 +219,10 @@ class SentryTarget extends Target
 
     /**
      * Translates Yii2 log levels to Sentry Severity.
+     *
+     * @param int $level yii2 log level
+     *
+     * @return Severity sentry severity
      */
     protected function getLogLevel(int $level): Severity
     {

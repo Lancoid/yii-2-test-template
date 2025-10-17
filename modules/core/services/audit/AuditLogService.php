@@ -6,6 +6,8 @@ namespace app\modules\core\services\audit;
 
 use app\modules\core\services\logger\LoggerFileServiceInterface;
 use app\modules\user\services\web\UserWebServiceInterface;
+use Random\RandomException;
+use Throwable;
 use Yii;
 use yii\web\Request;
 
@@ -25,17 +27,16 @@ readonly class AuditLogService implements AuditLogServiceInterface
 
         $action = $success ? 'auth.login.success' : 'auth.login.failed';
 
-        $this->log(
-            action: $action,
-            userId: null, // Not yet authenticated
-            changes: [
-                'username' => $username,
-                'success' => $success,
-                'reason' => $reason,
-            ],
-            context: array_merge([
-                'category' => 'authentication',
-            ], $context)
+        $this->writeLogEntry(
+            $this->createEntry(
+                action: $action,
+                changes: [
+                    'username' => $username,
+                    'success' => $success,
+                    'reason' => $reason,
+                ],
+                context: array_merge(['category' => 'authentication'], $context)
+            )
         );
     }
 
@@ -50,14 +51,14 @@ readonly class AuditLogService implements AuditLogServiceInterface
             return;
         }
 
-        $this->log(
-            action: sprintf('%s.%s', $entityType, $action),
-            userId: $userId,
-            entityType: $entityType,
-            entityId: $entityId,
-            context: array_merge([
-                'category' => 'access',
-            ], $context)
+        $this->writeLogEntry(
+            $this->createEntry(
+                action: sprintf('%s.%s', $entityType, $action),
+                userId: $userId,
+                entityType: $entityType,
+                entityId: $entityId,
+                context: array_merge(['category' => 'access'], $context)
+            )
         );
     }
 
@@ -76,15 +77,15 @@ readonly class AuditLogService implements AuditLogServiceInterface
 
         $changes = $this->calculateChanges($oldData, $newData);
 
-        $this->log(
-            action: sprintf('%s.%s', $entityType, $action),
-            userId: $userId,
-            entityType: $entityType,
-            entityId: $entityId,
-            changes: $changes,
-            context: array_merge([
-                'category' => 'modification',
-            ], $context)
+        $this->writeLogEntry(
+            $this->createEntry(
+                action: sprintf('%s.%s', $entityType, $action),
+                userId: $userId,
+                entityType: $entityType,
+                entityId: $entityId,
+                changes: $changes,
+                context: array_merge(['category' => 'modification'], $context)
+            )
         );
     }
 
@@ -99,22 +100,29 @@ readonly class AuditLogService implements AuditLogServiceInterface
             return;
         }
 
-        $this->log(
-            action: sprintf('security.%s', $event),
-            userId: $userId,
-            changes: [
-                'severity' => $severity,
-                'description' => $description,
-            ],
-            context: array_merge([
-                'category' => 'security',
-                'severity' => $severity,
-            ], $context)
+        $this->writeLogEntry(
+            $this->createEntry(
+                action: sprintf('security.%s', $event),
+                userId: $userId,
+                changes: [
+                    'severity' => $severity,
+                    'description' => $description,
+                ],
+                context: array_merge([
+                    'category' => 'security',
+                    'severity' => $severity,
+                ], $context)
+            )
         );
     }
 
     /**
-     * Calculate changes between old and new data.
+     * Calculates the changes between old and new data.
+     *
+     * @param array $oldData the original data
+     * @param array $newData the updated data
+     *
+     * @return array the changes as arrays of old and new values
      */
     private function calculateChanges(array $oldData, array $newData): array
     {
@@ -123,7 +131,6 @@ readonly class AuditLogService implements AuditLogServiceInterface
             'new' => [],
         ];
 
-        // Find modified and new fields
         foreach ($newData as $key => $newValue) {
             if (!array_key_exists($key, $oldData)) {
                 $changes['new'][$key] = $newValue;
@@ -133,7 +140,6 @@ readonly class AuditLogService implements AuditLogServiceInterface
             }
         }
 
-        // Find removed fields
         foreach ($oldData as $key => $oldValue) {
             if (!array_key_exists($key, $newData)) {
                 $changes['old'][$key] = $oldValue;
@@ -145,7 +151,9 @@ readonly class AuditLogService implements AuditLogServiceInterface
     }
 
     /**
-     * Get default context from current request.
+     * Retrieves the request context.
+     *
+     * @return array The context information (timestamp, IP, user agent, etc.).
      */
     private function getDefaultContext(): array
     {
@@ -153,12 +161,16 @@ readonly class AuditLogService implements AuditLogServiceInterface
             'timestamp' => microtime(true),
         ];
 
-        if (Yii::$app->has('request') && Yii::$app->request instanceof Request) {
-            $request = Yii::$app->request;
-            $context['ip'] = $request->getUserIP();
-            $context['user_agent'] = $request->getUserAgent();
-            $context['url'] = $request->getUrl();
-            $context['method'] = $request->getMethod();
+        try {
+            if (Yii::$app->has('request') && Yii::$app->request instanceof Request) {
+                $request = Yii::$app->request;
+                $context['ip'] = $request->getUserIP();
+                $context['user_agent'] = $request->getUserAgent();
+                $context['url'] = $request->getUrl();
+                $context['method'] = $request->getMethod();
+            }
+        } catch (Throwable $e) {
+            $context['request_error'] = $e->getMessage();
         }
 
         if (PHP_SAPI === 'cli') {
@@ -170,7 +182,11 @@ readonly class AuditLogService implements AuditLogServiceInterface
     }
 
     /**
-     * Get current authenticated user ID.
+     * Gets the current user ID.
+     *
+     * @return null|int the user ID or null if not available
+     *
+     * @throws Throwable
      */
     private function getCurrentUserId(): ?int
     {
@@ -179,19 +195,30 @@ readonly class AuditLogService implements AuditLogServiceInterface
         return $currentUser?->getId();
     }
 
-    private function log(
+    /**
+     * Creates an audit entry.
+     *
+     * @param string $action the action name
+     * @param null|int $userId the user ID
+     * @param null|string $entityType the entity type
+     * @param null|int|string $entityId the entity ID
+     * @param array $changes the changes made
+     * @param array $context additional context
+     *
+     * @return array the audit entry
+     *
+     * @throws Throwable
+     */
+    private function createEntry(
         string $action,
         ?int $userId = null,
         ?string $entityType = null,
         int|string|null $entityId = null,
         array $changes = [],
         array $context = []
-    ): void {
-        if (!$this->enabled) {
-            return;
-        }
-
-        $entry = [
+    ): array {
+        return [
+            'uuid' => $this->generateUuid(),
             'action' => $action,
             'user_id' => $userId ?? $this->getCurrentUserId(),
             'entity_type' => $entityType,
@@ -199,9 +226,33 @@ readonly class AuditLogService implements AuditLogServiceInterface
             'changes' => $changes,
             'context' => array_merge($this->getDefaultContext(), $context),
             'timestamp' => time(),
-            'created_at' => date('Y-m-d H:i:s'),
+            'created_at' => date('c'), // ISO8601
         ];
+    }
 
+    /**
+     * Writes an audit entry to the log.
+     *
+     * @param array $entry the audit entry
+     */
+    private function writeLogEntry(array $entry): void
+    {
         $this->loggerFileService->info($entry, 'audit');
+    }
+
+    /**
+     * Generates a UUID v4.
+     *
+     * @return string the generated UUID
+     *
+     * @throws RandomException
+     */
+    private function generateUuid(): string
+    {
+        $data = random_bytes(16);
+        $data[6] = chr((ord($data[6]) & 0x0F) | 0x40);
+        $data[8] = chr((ord($data[8]) & 0x3F) | 0x80);
+
+        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
     }
 }
