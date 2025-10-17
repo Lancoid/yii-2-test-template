@@ -4,8 +4,15 @@ declare(strict_types=1);
 
 use yii\db\Migration;
 
+/**
+ * Migration for creating the `users` table.
+ * Defines user attributes and unique indexes for access token and email.
+ */
 class m251001_120000_create_users_table extends Migration
 {
+    /**
+     * Creates the `users` table and required indexes.
+     */
     public function safeUp(): void
     {
         $this->createTable('users', [
@@ -26,6 +33,9 @@ class m251001_120000_create_users_table extends Migration
         $this->createIndex('UK__USERS__EMAIL', 'users', 'email', true);
     }
 
+    /**
+     * Drops the `users` table and its indexes.
+     */
     public function safeDown(): void
     {
         $this->dropTable('users');

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace app\modules\user\controllers;
 
+use app\modules\core\services\audit\AuditLogServiceInterface;
 use app\modules\core\services\exceptions\ServiceFormValidationException;
 use app\modules\core\services\sentry\SentryServiceInterface;
 use app\modules\user\forms\UserLoginForm;
@@ -68,6 +69,8 @@ class AuthorizationController extends Controller
      * @param SentryServiceInterface $sentryService service for error reporting
      *
      * @return array|Response|string the result of login action
+     *
+     * @throws Throwable
      */
     public function actionLogin(
         Request $request,
@@ -75,6 +78,7 @@ class AuthorizationController extends Controller
         UserLoginServiceInterface $userLoginService,
         Session $session,
         SentryServiceInterface $sentryService,
+        AuditLogServiceInterface $auditLogService,
     ): array|Response|string {
         $userLoginForm = new UserLoginForm();
 
@@ -95,6 +99,8 @@ class AuthorizationController extends Controller
                 $session->addFlash('error', $throwable->getMessage());
                 $sentryService->captureException($throwable);
             }
+
+            $auditLogService->logAuth($userLoginForm->getEmail() ?? '', $result);
 
             if ($result) {
                 return $this->goHome();

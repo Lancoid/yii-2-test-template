@@ -8,10 +8,16 @@ use yii\db\Migration;
 use yii\rbac\ManagerInterface;
 use yii\rbac\Role;
 
+/**
+ * Migration for creating user roles and their hierarchy.
+ * Adds `admin` and `user` roles and sets up inheritance.
+ */
 class m251001_130000_create_users_roles extends Migration
 {
     /**
-     * @throws Exception
+     * Creates `admin` and `user` roles and establishes their hierarchy.
+     *
+     * @throws Exception if an error occurs during role creation
      */
     public function safeUp(): void
     {
@@ -31,6 +37,9 @@ class m251001_130000_create_users_roles extends Migration
         $authManager->addChild($adminRole, $userRole);
     }
 
+    /**
+     * Removes `admin` and `user` roles and their hierarchy.
+     */
     public function safeDown(): void
     {
         /** @var ManagerInterface $authManager */
