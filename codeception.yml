@@ -1,4 +1,5 @@
 actor: Tester
+actor_suffix: Tester
 
 bootstrap: _bootstrap.php
 

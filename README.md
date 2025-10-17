@@ -3,29 +3,28 @@
 [![CI](https://github.com/Lancoid/yii-2-test-template/workflows/CI/badge.svg)](https://github.com/Lancoid/yii-2-test-template/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/Lancoid/yii-2-test-template/branch/main/graph/badge.svg)](https://codecov.io/gh/Lancoid/yii-2-test-template)
 
-A modular Yii 2 application template with Core, Site, and User modules. It uses PostgreSQL, Redis cache, optional Sentry error reporting, and follows modern PHP 8.4 practices.  
-Development and tooling are Docker-first, with Composer for dependencies and Codeception for testing.
+A modular Yii 2 application template featuring Core, Site, and User modules. 
+Uses PostgreSQL, Redis cache, optional Sentry error tracking, and modern PHP 8.4 practices. 
+Development is Docker-first, dependencies managed via Composer, and testing via Codeception.
 
-## Overview
-- Framework: Yii 2 (~2.0.45) with Bootstrap 5 UI helpers
-- Language: PHP >= 8.4
-- Package manager: Composer 2
-- Caching: Redis (yii2-redis)
-- Database: PostgreSQL (via PDO)
-- Error tracking: Sentry (optional)
-- Testing: Codeception (unit/functional), Yii2 module
-- Static analysis/formatting: PHPStan, Rector, PHP-CS-Fixer
-- Orchestration: Docker Compose (optional, recommended for local dev)
+
+## Technologies
+- **Framework:** Yii 2 (~2.0.45) + Bootstrap 5 UI
+- **Language:** PHP >= 8.4
+- **Package manager:** Composer 2
+- **Cache:** Redis (yii2-redis)
+- **Database:** PostgreSQL (PDO)
+- **Error tracking:** Sentry (optional)
+- **Testing:** Codeception (unit/functional), Yii2 module
+- **Static analysis:** PHPStan, Rector, PHP-CS-Fixer
+- **Orchestration:** Docker Compose (recommended for local development)
 
 ## Requirements
-- Linux/macOS environment is recommended (the original docs target Linux; Windows is not officially supported in the current setup).
-- PHP 8.4+ and Composer 2 if running without Docker.
-- Docker and Docker Compose plugin if using containers.
-- PostgreSQL server and Redis server accessible with configured credentials.
-- For Docker-based routing with hostnames, Traefik reverse proxy is referenced by the setup below.
-
-Notes about Docker in this repo:
-- docker-compose.yml references external Docker networks traefik and a Dockerfile that appears to be outside this repository path.
+- Linux/macOS (Windows is not officially supported)
+- PHP 8.4+, Composer 2 (if not using Docker)
+- Docker and Docker Compose
+- PostgreSQL and Redis with valid credentials
+- Traefik for hostname routing (see example below)
 
 ## Setup and Run
 You can run the project in two ways: with Docker (recommended) or directly on your host.
