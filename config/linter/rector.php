@@ -11,6 +11,7 @@ use Rector\CodingStyle\Rector\Catch_\CatchExceptionNameMatchingTypeRector;
 use Rector\CodingStyle\Rector\If_\NullableCompareToNullRector;
 use Rector\CodingStyle\Rector\Stmt\NewlineAfterStatementRector;
 use Rector\Config\RectorConfig;
+use Rector\DeadCode\Rector\If_\RemoveAlwaysTrueIfConditionRector;
 use Rector\Strict\Rector\BooleanNot\BooleanInBooleanNotRuleFixerRector;
 use Rector\Strict\Rector\Empty_\DisallowedEmptyRuleFixerRector;
 use Rector\ValueObject\PhpVersion;
@@ -35,6 +36,7 @@ $skippedRules = [
     NewlineAfterStatementRector::class,
     NullableCompareToNullRector::class,
     OptionalParametersAfterRequiredRector::class,
+    RemoveAlwaysTrueIfConditionRector::class,
     SimplifyEmptyCheckOnEmptyArrayRector::class,
     SwitchNegatedTernaryRector::class,
 ];
