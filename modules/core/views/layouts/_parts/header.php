@@ -34,11 +34,6 @@ $menuItems = [
         'visible' => $yiiUser?->isGuest,
     ],
     [
-        'label' => 'Треки',
-        'url' => '/track/default/index',
-        'visible' => !$yiiUser?->isGuest,
-    ],
-    [
         'label' => $appUser?->username,
         'url' => '#',
         'items' => [
